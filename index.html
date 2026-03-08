@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robert G. Murray</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Familjen+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0c;
+    --surface: #0f0f12;
+    --surface-raised: #161619;
+    --border: #222228;
+    --grid-line: rgba(200, 164, 110, 0.06);
+    --construction: rgba(200, 164, 110, 0.09);
+    --text-primary: #eeede7;
+    --text-secondary: #8a8990;
+    --text-tertiary: #55545c;
+    --text-annotation: #6a6970;
+    --accent: #c8a46e;
+    --accent-dim: rgba(200, 164, 110, 0.1);
+    --accent-ghost: rgba(200, 164, 110, 0.04);
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'Familjen Grotesk', sans-serif;
+  }
+
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--black);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── NOTEBOOK GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Construction margin line */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 280px;
+    width: 1px;
+    background: var(--construction);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--black);
+  }
+
+  .page-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1.75rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    background: rgba(10, 10, 12, 0.85);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+
+  .nav-links a:hover { color: var(--text-primary); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* ── ANNOTATION STYLE ── */
+  .annotation {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-annotation);
+    letter-spacing: 0.01em;
+    line-height: 1.5;
+    position: relative;
+    padding-left: 1rem;
+  }
+
+  .annotation::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 3px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    background: transparent;
+  }
+
+  .margin-note {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    line-height: 1.55;
+    max-width: 200px;
+  }
+
+  .reference-mark {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--accent);
+    vertical-align: super;
+    margin-left: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 3rem 6rem;
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 15%;
+    right: 5%;
+    width: 340px;
+    height: 340px;
+    border: 1px solid var(--construction);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: calc(15% + 42px);
+    right: calc(5% + 42px);
+    width: 256px;
+    height: 256px;
+    border: 1px solid var(--construction);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* Construction crosshair in hero circle */
+  .hero-construction {
+    position: absolute;
+    top: calc(15% + 170px);
+    right: calc(5% + 170px);
+    width: 1px;
+    height: 40px;
+    background: var(--construction);
+    pointer-events: none;
+  }
+
+  .hero-construction::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -20px;
+    width: 40px;
+    height: 1px;
+    background: var(--construction);
+  }
+
+  .hero-label {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.75rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.3s;
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.8rem, 6.5vw, 6rem);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    max-width: 860px;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.5s;
+  }
+
+  .hero-body {
+    display: flex;
+    gap: 3rem;
+    align-items: flex-start;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.7s;
+  }
+
+  .hero-statement {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    font-weight: 400;
+    line-height: 1.75;
+    color: var(--text-secondary);
+    max-width: 540px;
+  }
+
+  .hero-annotation {
+    padding-top: 0.25rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.9s;
+  }
+
+  .hero-rule {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 3.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 1.1s;
+  }
+
+  .hero-rule span {
+    width: 48px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-rule-text {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 7rem 3rem;
+    border-top: 1px solid var(--border);
+    position: relative;
+  }
+
+  .section-grid {
+    display: grid;
+    grid-template-columns: 240px 1fr 180px;
+    gap: 3rem;
+    max-width: 1200px;
+  }
+
+  .section-grid-narrow {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 3rem;
+    max-width: 1200px;
+  }
+
+  .section-label {
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    padding-top: 0.3rem;
+  }
+
+  .section-number {
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-content h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.7rem, 2.8vw, 2.4rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 1.75rem;
+  }
+
+  .section-content p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    max-width: 580px;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-margin {
+    padding-top: 0.3rem;
+  }
+
+  /* ── PRINCIPLES ── */
+  .principles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin-top: 3.5rem;
+    position: relative;
+  }
+
+  .principle {
+    padding: 2.5rem 2rem;
+    border: 1px solid var(--border);
+    margin-right: -1px;
+    margin-bottom: -1px;
+    position: relative;
+    transition: background 0.4s ease;
+  }
+
+  .principle:hover {
+    background: var(--accent-ghost);
+  }
+
+  /* Diagonal construction line across principles */
+  .principles-grid::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to bottom right,
+      transparent calc(50% - 0.5px),
+      var(--construction) 50%,
+      transparent calc(50% + 0.5px)
+    );
+    pointer-events: none;
+  }
+
+  .principle-number {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+  }
+
+  .principle h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .principle p {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+
+  /* ── DOMAINS ── */
+  .domains {
+    margin-top: 2rem;
+  }
+
+  .domain-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: baseline;
+    gap: 2rem;
+    padding: 1.4rem 0;
+    border-bottom: 1px solid var(--border);
+    transition: padding-left 0.3s ease, background 0.3s ease;
+    cursor: default;
+  }
+
+  .domain-item:first-child {
+    border-top: 1px solid var(--border);
+  }
+
+  .domain-item:hover {
+    padding-left: 0.75rem;
+  }
+
+  .domain-item:hover .domain-name {
+    color: var(--text-primary);
+  }
+
+  .domain-item:hover .domain-marker {
+    background: var(--accent);
+  }
+
+  .domain-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+  }
+
+  .domain-detail {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.04em;
+    font-family: var(--font-body);
+  }
+
+  .domain-marker {
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    transition: background 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  /* ── PHILOSOPHY / QUOTE ── */
+  .signal-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 3rem 3rem 3rem 3.5rem;
+    margin-top: 2.5rem;
+    max-width: 580px;
+    position: relative;
+  }
+
+  .signal-block::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    bottom: -1px;
+    width: 3px;
+    background: var(--accent);
+  }
+
+  /* Notebook-style annotation arrow */
+  .signal-block::after {
+    content: '←  ref. Loewy, MAYA principle';
+    position: absolute;
+    right: -220px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 0.68rem;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .signal-block blockquote {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
+
+  .signal-attr {
+    margin-top: 1.25rem;
+    font-size: 0.78rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── THREAD / LINEAGE ── */
+  .lineage {
+    margin-top: 4rem;
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .lineage-item {
+    flex: 1;
+    padding: 2rem 1.75rem;
+    border: 1px solid var(--border);
+    margin-right: -1px;
+    position: relative;
+  }
+
+  .lineage-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 12px;
+    background: var(--construction);
+  }
+
+  .lineage-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .lineage-role {
+    font-size: 0.72rem;
+    font-style: italic;
+    color: var(--text-annotation);
+    line-height: 1.5;
+  }
+
+  .lineage-thread {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .lineage-thread span {
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(to right, var(--accent), transparent);
+  }
+
+  .lineage-thread-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+  }
+
+  /* ── PORTFOLIO GATE ── */
+  .portfolio-gate {
+    margin-top: 2.5rem;
+  }
+
+  .gate-container {
+    max-width: 480px;
+  }
+
+  .gate-label {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.75rem;
+  }
+
+  .gate-input-row {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .gate-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-right: none;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    padding: 0.85rem 1.25rem;
+    outline: none;
+    letter-spacing: 0.1em;
+    transition: border-color 0.3s ease;
+  }
+
+  .gate-input::placeholder {
+    color: var(--text-tertiary);
+    letter-spacing: 0.2em;
+  }
+
+  .gate-input:focus {
+    border-color: var(--accent);
+  }
+
+  .gate-btn {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.85rem 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .gate-btn:hover {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .gate-btn-arrow {
+    transition: transform 0.3s ease;
+  }
+
+  .gate-btn:hover .gate-btn-arrow {
+    transform: translateX(3px);
+  }
+
+  .gate-hint {
+    margin-top: 1rem;
+  }
+
+  .gate-error {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: #c06a5e;
+    min-height: 1.2em;
+  }
+
+  /* ── PORTFOLIO UNLOCKED ── */
+  .portfolio-unlocked {
+    margin-top: 2.5rem;
+  }
+
+  .portfolio-status {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+  }
+
+  .portfolio-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse-dot 2s ease infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .portfolio-status-text {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .portfolio-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .portfolio-item {
+    padding: 2rem 2rem 2rem 2.5rem;
+    border: 1px solid var(--border);
+    margin-bottom: -1px;
+    position: relative;
+    transition: background 0.4s ease;
+  }
+
+  .portfolio-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .portfolio-item:hover {
+    background: var(--accent-ghost);
+  }
+
+  .portfolio-item:hover::before {
+    opacity: 1;
+  }
+
+  .portfolio-item-pending {
+    opacity: 0.45;
+  }
+
+  .portfolio-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .portfolio-item-type {
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .portfolio-item-date {
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+  }
+
+  .portfolio-item-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .portfolio-item-desc {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .portfolio-item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.65rem;
+    border-radius: 2px;
+  }
+
+  /* ── CONTACT ── */
+  .contact-section {
+    padding: 9rem 3rem;
+    border-top: 1px solid var(--border);
+    position: relative;
+  }
+
+  /* Construction circle in contact */
+  .contact-section::before {
+    content: '';
+    position: absolute;
+    bottom: 4rem;
+    right: 6rem;
+    width: 180px;
+    height: 180px;
+    border: 1px solid var(--construction);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .contact-section .section-label {
+    margin-bottom: 2rem;
+  }
+
+  .contact-heading {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.2rem, 4.5vw, 4rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+    max-width: 650px;
+  }
+
+  .contact-row {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .contact-email {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    padding-bottom: 2px;
+    border-bottom: 1px solid rgba(200, 164, 110, 0.25);
+    transition: border-color 0.3s ease;
+  }
+
+  .contact-email:hover {
+    border-color: var(--accent);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 2.25rem 3rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer p {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.05em;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .footer-links a {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.3s ease;
+  }
+
+  .footer-links a:hover {
+    color: var(--text-primary);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Staggered children */
+  .reveal-stagger > * {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .reveal-stagger.visible > *:nth-child(1) { transition-delay: 0s; opacity: 1; transform: translateY(0); }
+  .reveal-stagger.visible > *:nth-child(2) { transition-delay: 0.08s; opacity: 1; transform: translateY(0); }
+  .reveal-stagger.visible > *:nth-child(3) { transition-delay: 0.16s; opacity: 1; transform: translateY(0); }
+  .reveal-stagger.visible > *:nth-child(4) { transition-delay: 0.24s; opacity: 1; transform: translateY(0); }
+  .reveal-stagger.visible > *:nth-child(5) { transition-delay: 0.32s; opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .section-grid { grid-template-columns: 200px 1fr; }
+    .section-margin { display: none; }
+    .signal-block::after { display: none; }
+    body::after { left: 200px; }
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.25rem 1.5rem; }
+    .nav-links { gap: 1.5rem; }
+    .hero { padding: 0 1.5rem 4rem; }
+    section { padding: 5rem 1.5rem; }
+    .section-grid,
+    .section-grid-narrow { grid-template-columns: 1fr; gap: 1.5rem; }
+    .principles-grid { grid-template-columns: 1fr; }
+    .principles-grid::after { display: none; }
+    .lineage { flex-direction: column; }
+    .lineage-item { margin-right: 0; margin-bottom: -1px; }
+    .contact-section { padding: 6rem 1.5rem; }
+    footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; }
+    body::after { display: none; }
+    .hero::before, .hero::after, .hero-construction { display: none; }
+    .hero-body { flex-direction: column; gap: 1.5rem; }
+    .contact-section::before { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .hero h1 { font-size: 2.3rem; }
+    .domain-item { grid-template-columns: 1fr auto; }
+    .domain-marker { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-content">
+
+<!-- NAV -->
+<nav>
+  <div class="nav-name">Robert G. Murray</div>
+  <ul class="nav-links">
+    <li><a href="#approach">Approach</a></li>
+    <li><a href="#domains">Domains</a></li>
+    <li><a href="#lineage">Lineage</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-construction"></div>
+  <div class="hero-label">Product &amp; Innovation Leadership</div>
+  <h1>Scaling Emerging Technologies into Enterprise-Ready Operating Systems</h1>
+  <div class="hero-body">
+    <p class="hero-statement">
+      Bridging industrial design discipline with digital product strategy — transforming complex technologies into systems that organizations can deploy, operate, and scale.
+    </p>
+    <div class="hero-annotation">
+      <div class="annotation">
+        The same questions that govern physical product design govern digital systems. The medium changed. The rigor didn't.
+      </div>
+    </div>
+  </div>
+  <div class="hero-rule">
+    <span></span>
+    <div class="hero-rule-text">Scroll to explore</div>
+  </div>
+</section>
+
+<!-- APPROACH -->
+<section id="approach">
+  <div class="section-grid reveal">
+    <div>
+      <span class="section-number">§ 01</span>
+      <div class="section-label">Approach</div>
+    </div>
+    <div class="section-content">
+      <h2>From Atoms to Bits.<br>The Discipline Doesn't Change.</h2>
+      <p>
+        Two decades designing physical products taught a fundamental truth: great systems emerge from asking the right questions under real constraints. Material selection, ergonomics, manufacturing tolerances — that rigor now applies to digital product architecture, AI integration, and enterprise automation.<span class="reference-mark">i</span>
+      </p>
+      <p>
+        Digital gives you the feedback loop that physical never could. But the foundational discipline — understanding the user, defining the problem, making hard tradeoff decisions — remains identical.
+      </p>
+    </div>
+    <div class="section-margin">
+      <div class="margin-note">
+        i. The notebook and the prototype serve the same function — making thinking visible so it can be tested.
+      </div>
+    </div>
+  </div>
+
+  <div class="principles-grid reveal-stagger">
+    <div class="principle">
+      <div class="principle-number">01</div>
+      <h3>Problem Definition</h3>
+      <p>Every engagement begins with rigorous problem framing. If the problem isn't worth solving, the solution isn't worth building.</p>
+    </div>
+    <div class="principle">
+      <div class="principle-number">02</div>
+      <h3>Systems Thinking</h3>
+      <p>Products don't exist in isolation. Architecture decisions cascade through organizations. Design for the system, not the feature.</p>
+    </div>
+    <div class="principle">
+      <div class="principle-number">03</div>
+      <h3>Disciplined Execution</h3>
+      <p>Scope discipline, measurable outcomes, iterative validation. The hardest decisions are always about what not to build.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DOMAINS -->
+<section id="domains">
+  <div class="section-grid reveal">
+    <div>
+      <span class="section-number">§ 02</span>
+      <div class="section-label">Domains</div>
+    </div>
+    <div class="section-content">
+      <h2>Where Technology Meets Enterprise Reality</h2>
+      <p>
+        Operating at the intersection of emerging capability and organizational readiness — the space where promising technology becomes operational infrastructure.
+      </p>
+
+      <div class="domains reveal-stagger">
+        <div class="domain-item">
+          <span class="domain-name">AI &amp; Automation Architecture</span>
+          <span class="domain-detail">Strategy → Integration → Scale</span>
+          <div class="domain-marker"></div>
+        </div>
+        <div class="domain-item">
+          <span class="domain-name">Digital Product Strategy</span>
+          <span class="domain-detail">Concept → Validation → Launch</span>
+          <div class="domain-marker"></div>
+        </div>
+        <div class="domain-item">
+          <span class="domain-name">Industrial Design Systems</span>
+          <span class="domain-detail">Physical → Digital → Hybrid</span>
+          <div class="domain-marker"></div>
+        </div>
+        <div class="domain-item">
+          <span class="domain-name">Enterprise Technology Integration</span>
+          <span class="domain-detail">Assessment → Architecture → Deploy</span>
+          <div class="domain-marker"></div>
+        </div>
+        <div class="domain-item">
+          <span class="domain-name">Innovation Operations</span>
+          <span class="domain-detail">R&amp;D → Commercialization → Revenue</span>
+          <div class="domain-marker"></div>
+        </div>
+      </div>
+    </div>
+    <div class="section-margin">
+      <div class="margin-note" style="margin-top: 6rem;">
+        Each domain is a surface. The value is in the connections between them.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LINEAGE -->
+<section id="lineage">
+  <div class="section-grid-narrow reveal">
+    <div>
+      <span class="section-number">§ 03</span>
+      <div class="section-label">Lineage</div>
+    </div>
+    <div class="section-content">
+      <h2>Most Advanced Yet Acceptable</h2>
+      <p>
+        The best frameworks for technology adoption aren't new. The principles that govern how humans accept change — in products, in systems, in organizations — were articulated by practitioners who understood that observation precedes invention, and that elegance emerges from constraint.
+      </p>
+
+      <div class="signal-block">
+        <blockquote>
+          "The adult public's taste is not necessarily ready to accept the logical solutions to their requirements if the solution implies too vast a departure from what they have been conditioned into accepting as the norm."
+        </blockquote>
+        <div class="signal-attr">— Raymond Loewy</div>
+      </div>
+
+      <div class="lineage">
+        <div class="lineage-item">
+          <div class="lineage-name">Da Vinci</div>
+          <div class="lineage-role">Observation as method. Cross-domain synthesis. Making thinking visible through notation, drawing, and prototype.</div>
+        </div>
+        <div class="lineage-item">
+          <div class="lineage-name">Loewy</div>
+          <div class="lineage-role">The MAYA principle. Bridging engineering capability with human readiness. Design as a business discipline.</div>
+        </div>
+        <div class="lineage-item">
+          <div class="lineage-name">Rams</div>
+          <div class="lineage-role">Less but better. Systematic design thinking applied at scale. Every element earns its place or it doesn't exist.</div>
+        </div>
+      </div>
+
+      <div class="lineage-thread" style="margin-top: 1.5rem;">
+        <span></span>
+        <div class="lineage-thread-label">Continuity of practice</div>
+        <span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO GATE -->
+<section id="portfolio">
+  <div class="section-grid-narrow reveal">
+    <div>
+      <span class="section-number">§ 04</span>
+      <div class="section-label">Portfolio</div>
+    </div>
+    <div class="section-content">
+      <h2>Selected Work</h2>
+      <p>
+        Case studies and strategic documents are available to approved collaborators, partners, and prospective engagements.
+      </p>
+
+      <!-- Gate -->
+      <div class="portfolio-gate" id="portfolioGate">
+        <div class="gate-container">
+          <div class="gate-label">Enter access code</div>
+          <div class="gate-input-row">
+            <input type="password" id="accessCode" class="gate-input" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="off" spellcheck="false">
+            <button id="accessBtn" class="gate-btn" onclick="checkAccess()">
+              <span class="gate-btn-text">Authenticate</span>
+              <span class="gate-btn-arrow">&rarr;</span>
+            </button>
+          </div>
+          <div class="gate-hint">
+            <div class="annotation">
+              Request access via <a href="mailto:rgmurray@designsell.org" style="color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(200,164,110,0.3);">rgmurray@designsell.org</a> or direct conversation.
+            </div>
+          </div>
+          <div id="gateError" class="gate-error"></div>
+        </div>
+      </div>
+
+      <!-- Unlocked Portfolio -->
+      <div class="portfolio-unlocked" id="portfolioContent" style="display: none;">
+        <div class="portfolio-status">
+          <span class="portfolio-status-dot"></span>
+          <span class="portfolio-status-text">Access granted</span>
+        </div>
+
+        <div class="portfolio-items">
+          <div class="portfolio-item">
+            <div class="portfolio-item-header">
+              <div class="portfolio-item-type">CASE STUDY</div>
+              <div class="portfolio-item-date">March 2026</div>
+            </div>
+            <h3 class="portfolio-item-title">OpenClaw: Autonomous AI Agent System</h3>
+            <p class="portfolio-item-desc">From concept to commercialization plan. Covers problem definition, market positioning, technical architecture, business model, and go-to-market strategy for an edge-deployed AI agent system targeting design-intensive enterprise workflows.</p>
+            <div class="portfolio-item-tags">
+              <span class="tag">AI Architecture</span>
+              <span class="tag">Product Strategy</span>
+              <span class="tag">Edge Computing</span>
+              <span class="tag">Commercialization</span>
+            </div>
+          </div>
+
+          <div class="portfolio-item portfolio-item-pending">
+            <div class="portfolio-item-header">
+              <div class="portfolio-item-type">IN PROGRESS</div>
+            </div>
+            <h3 class="portfolio-item-title">Enterprise UX Redesign</h3>
+            <p class="portfolio-item-desc">Full teardown and redesign case study. Heuristic evaluation, user research, journey mapping, wireframes, and projected impact analysis.</p>
+          </div>
+
+          <div class="portfolio-item portfolio-item-pending">
+            <div class="portfolio-item-header">
+              <div class="portfolio-item-type">IN PROGRESS</div>
+            </div>
+            <h3 class="portfolio-item-title">AI Integration Strategy Brief</h3>
+            <p class="portfolio-item-desc">Product brief proposing AI integration into an enterprise workflow vertical. Build vs. buy analysis, risk assessment, adoption strategy, and success metrics.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <span class="section-number">§ 05</span>
+  <div class="section-label" style="margin-bottom: 2rem;">Connect</div>
+  <h2 class="contact-heading reveal">
+    Building what's next requires partners who understand what's now.
+  </h2>
+  <div class="contact-row reveal">
+    <a href="mailto:rgmurray@designsell.org" class="contact-email">rgmurray@designsell.org</a>
+    <div class="annotation" style="margin-left: 1rem;">
+      Open to board advisory, fractional leadership, and strategic consulting engagements.
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>&copy; 2026 Robert G. Murray</p>
+  <div class="footer-links">
+    <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+</footer>
+
+</div>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: '0px 0px -30px 0px'
+  });
+
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => observer.observe(el));
+
+  // ── Portfolio Access Gate ──
+  // Default code: "openclaw2026" — change this to whatever you want
+  const ACCESS_HASH = "openclaw2026";
+
+  function checkAccess() {
+    const input = document.getElementById('accessCode').value.trim();
+    const error = document.getElementById('gateError');
+    
+    if (input === ACCESS_HASH) {
+      document.getElementById('portfolioGate').style.display = 'none';
+      document.getElementById('portfolioContent').style.display = 'block';
+      sessionStorage.setItem('portfolio_access', 'granted');
+      error.textContent = '';
+    } else {
+      error.textContent = 'Invalid access code.';
+      document.getElementById('accessCode').value = '';
+      document.getElementById('accessCode').focus();
+    }
+  }
+
+  // Allow Enter key to submit
+  document.getElementById('accessCode').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkAccess();
+  });
+
+  // Restore access within session
+  if (sessionStorage.getItem('portfolio_access') === 'granted') {
+    document.getElementById('portfolioGate').style.display = 'none';
+    document.getElementById('portfolioContent').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
