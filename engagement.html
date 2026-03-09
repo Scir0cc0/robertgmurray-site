@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engagement — Robert G. Murray</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Familjen+Grotesk:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0c;
+      --surface: #111114;
+      --surface-2: #17171b;
+      --text: #eeede7;
+      --text-dim: #c8c7c0;
+      --text-muted: #7a7972;
+      --accent: #c8a46e;
+      --accent-dim: rgba(200, 164, 110, 0.10);
+      --accent-line: rgba(200, 164, 110, 0.25);
+      --border: rgba(238, 237, 231, 0.07);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Familjen Grotesk', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+      background-image:
+        linear-gradient(rgba(200,164,110,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,164,110,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .geo-layer {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .geo-layer svg { position: absolute; opacity: 0.04; }
+    .geo-ring { top: -200px; right: -200px; width: 600px; height: 600px; }
+
+    .page-wrap {
+      position: relative; z-index: 1;
+      max-width: 900px; margin: 0 auto; padding: 0 40px;
+    }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 32px 0 40px; border-bottom: 1px solid var(--border);
+      margin-bottom: 80px;
+    }
+    .nav-wordmark {
+      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-dim); text-decoration: none;
+    }
+    .nav-wordmark span { color: var(--accent); }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-muted); text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+    /* ── Section header ── */
+    .section-label {
+      font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-label::before {
+      content: ''; display: block; width: 24px; height: 1px; background: var(--accent);
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(30px, 4.5vw, 44px);
+      font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+      color: var(--text); margin-bottom: 16px;
+    }
+    .section-intro {
+      font-size: 16px; color: var(--text-dim);
+      max-width: 540px; line-height: 1.65; margin-bottom: 56px;
+    }
+
+    /* ══════════════════════════════════════════
+       ENGAGEMENT MODEL
+    ══════════════════════════════════════════ */
+    .engagement-section { margin-bottom: 100px; }
+
+    .engagement-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+
+    .eng-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 32px 32px 36px;
+      position: relative;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .eng-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: transparent;
+      transition: background 0.2s;
+    }
+    .eng-card:hover {
+      background: var(--surface-2);
+      border-color: rgba(200, 164, 110, 0.15);
+    }
+    .eng-card:hover::before { background: var(--accent); }
+
+    .eng-type {
+      font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 14px;
+    }
+    .eng-name {
+      font-family: 'Syne', sans-serif; font-size: 18px;
+      font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
+      color: var(--text); margin-bottom: 16px;
+    }
+    .eng-desc {
+      font-size: 14px; color: var(--text-dim);
+      line-height: 1.65; margin-bottom: 20px;
+    }
+    .eng-detail {
+      font-size: 12.5px; color: var(--text-muted);
+      font-style: italic; border-top: 1px solid var(--border);
+      padding-top: 16px; line-height: 1.55;
+    }
+    .eng-detail strong {
+      color: var(--text-dim); font-style: normal; font-weight: 500;
+    }
+
+    .eng-cta {
+      margin-top: 40px;
+      padding: 28px 32px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-line);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 20px;
+    }
+    .eng-cta-text {
+      font-size: 15px; color: var(--text-dim); line-height: 1.5;
+      max-width: 480px;
+    }
+    .eng-cta-text strong { color: var(--text); font-weight: 500; }
+    .cta-link {
+      font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent); text-decoration: none; white-space: nowrap;
+      display: flex; align-items: center; gap: 8px; transition: gap 0.2s;
+    }
+    .cta-link::after { content: '→'; font-size: 14px; }
+    .cta-link:hover { gap: 12px; }
+
+    /* ══════════════════════════════════════════
+       SIGNAL MARKERS
+    ══════════════════════════════════════════ */
+    .signal-section { margin-bottom: 100px; }
+
+    /* Endorsement */
+    .endorsement-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 36px 40px;
+      margin-bottom: 2px;
+    }
+    .endorsement-quote {
+      font-size: 18px; line-height: 1.65;
+      color: var(--text); font-style: italic;
+      margin-bottom: 24px; position: relative;
+    }
+    .endorsement-quote::before {
+      content: '"';
+      font-family: 'Syne', sans-serif; font-size: 64px; line-height: 0.6;
+      color: var(--accent); opacity: 0.25;
+      position: absolute; top: -8px; left: -8px;
+      pointer-events: none;
+    }
+    .endorsement-attribution {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .attr-dot {
+      width: 32px; height: 32px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-line);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-size: 12px;
+      font-weight: 700; color: var(--accent); flex-shrink: 0;
+    }
+    .attr-name {
+      font-family: 'Syne', sans-serif; font-size: 13px;
+      font-weight: 600; color: var(--text); letter-spacing: 0.03em;
+    }
+    .attr-title {
+      font-size: 12px; color: var(--text-muted); margin-top: 2px;
+    }
+
+    /* Selected experience */
+    .experience-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 2px;
+    }
+    .exp-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 28px 28px 24px;
+      transition: background 0.2s;
+    }
+    .exp-item:hover { background: var(--surface-2); }
+    .exp-domain {
+      font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 10px;
+    }
+    .exp-org {
+      font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+      color: var(--text); margin-bottom: 6px; line-height: 1.2;
+    }
+    .exp-role {
+      font-size: 13px; color: var(--text-dim); line-height: 1.5; margin-bottom: 12px;
+    }
+    .exp-note {
+      font-size: 12px; color: var(--text-muted); font-style: italic;
+      border-top: 1px solid var(--border); padding-top: 12px; line-height: 1.5;
+    }
+
+    /* ── Footer ── */
+    .footer-note {
+      margin-top: 80px; padding: 40px 0 80px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 24px;
+    }
+    .footer-note p { font-size: 13px; color: var(--text-muted); font-style: italic; }
+    .back-link {
+      font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent); text-decoration: none;
+      display: flex; align-items: center; gap: 8px; transition: gap 0.2s;
+    }
+    .back-link::before { content: '←'; font-size: 14px; }
+    .back-link:hover { gap: 12px; }
+
+    @media (max-width: 700px) {
+      .page-wrap { padding: 0 20px; }
+      nav { flex-direction: column; gap: 20px; align-items: flex-start; }
+      .engagement-grid { grid-template-columns: 1fr; }
+      .experience-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .experience-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="geo-layer">
+    <svg class="geo-ring" viewBox="0 0 600 600" fill="none">
+      <circle cx="300" cy="300" r="280" stroke="#c8a46e" stroke-width="1"/>
+      <circle cx="300" cy="300" r="220" stroke="#c8a46e" stroke-width="0.5"/>
+      <circle cx="300" cy="300" r="160" stroke="#c8a46e" stroke-width="0.5"/>
+      <line x1="0" y1="300" x2="600" y2="300" stroke="#c8a46e" stroke-width="0.5"/>
+      <line x1="300" y1="0" x2="300" y2="600" stroke="#c8a46e" stroke-width="0.5"/>
+      <circle cx="300" cy="300" r="4" fill="#c8a46e"/>
+    </svg>
+  </div>
+
+  <div class="page-wrap">
+    <nav>
+      <a href="index.html" class="nav-wordmark">Robert G. Murray <span>·</span> DesignSell</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Work</a></li>
+        <li><a href="perspectives.html">Perspectives</a></li>
+        <li><a href="engagement.html" class="active">Engagement</a></li>
+        <li><a href="mailto:rgmurray@designsell.org">Contact</a></li>
+      </ul>
+    </nav>
+
+    <!-- ══ ENGAGEMENT MODEL ══ -->
+    <div class="engagement-section" id="engagement">
+      <div class="section-label">How We Work Together</div>
+      <h2 class="section-title">Engagement Model</h2>
+      <p class="section-intro">Every engagement is structured around a specific outcome. These are the four formats that match most needs — select the one that fits your timeline and context.</p>
+
+      <div class="engagement-grid">
+
+        <div class="eng-card">
+          <div class="eng-type">Fractional Leadership</div>
+          <div class="eng-name">Fractional VP Product</div>
+          <div class="eng-desc">Embedded product leadership operating at VP/SVP level — owning roadmap, leading the product org, and sitting in executive conversations — without the full-time commitment.</div>
+          <div class="eng-detail">
+            <strong>Best for:</strong> Growth-stage companies scaling their product function, or PE-backed firms between product leadership hires.<br><br>
+            <strong>Structure:</strong> 2–3 days/week, 3–6 month minimum. Can transition to full-time if mutual fit is confirmed.
+          </div>
+        </div>
+
+        <div class="eng-card">
+          <div class="eng-type">Advisory</div>
+          <div class="eng-name">Board &amp; Strategic Advisory</div>
+          <div class="eng-desc">Ongoing strategic counsel for founders, boards, and PE operating partners navigating product-market questions, technology decisions, or innovation portfolio management.</div>
+          <div class="eng-detail">
+            <strong>Best for:</strong> Boards wanting product-literate perspective on acquisitions, pivots, or platform bets. Founders needing a thinking partner with enterprise operating experience.<br><br>
+            <strong>Structure:</strong> Monthly retainer. Includes availability for board preparation and strategic inflection events.
+          </div>
+        </div>
+
+        <div class="eng-card">
+          <div class="eng-type">Diagnostic</div>
+          <div class="eng-name">90-Day Strategic Assessment</div>
+          <div class="eng-desc">A structured diagnostic of a company's product function, technology posture, or innovation pipeline — with a concrete recommendation set and implementation roadmap delivered at close.</div>
+          <div class="eng-detail">
+            <strong>Best for:</strong> Post-acquisition integration, pre-raise preparation, or situations where leadership suspects product strategy and execution are misaligned but lacks a clear picture of where.<br><br>
+            <strong>Deliverable:</strong> Written findings with prioritized action plan. Suitable for board presentation.
+          </div>
+        </div>
+
+        <div class="eng-card">
+          <div class="eng-type">Project-Based</div>
+          <div class="eng-name">Defined-Scope Leadership</div>
+          <div class="eng-desc">Focused execution on a specific product or innovation initiative — product launch, AI integration strategy, design system build, or market expansion — with defined scope and timeline.</div>
+          <div class="eng-detail">
+            <strong>Best for:</strong> Companies that have clear internal leadership but need senior capacity for a high-stakes initiative they cannot staff internally at the needed level.<br><br>
+            <strong>Structure:</strong> Fixed scope and timeline agreed in advance. Milestone-based.
+          </div>
+        </div>
+
+      </div><!-- /.engagement-grid -->
+
+      <div class="eng-cta">
+        <div class="eng-cta-text">
+          <strong>Not sure which model fits?</strong> Most conversations start the same way: a 30-minute call to understand your context and confirm whether there's a genuine fit worth exploring.
+        </div>
+        <a href="mailto:rgmurray@designsell.org" class="cta-link">Start a Conversation</a>
+      </div>
+
+    </div><!-- /.engagement-section -->
+
+    <!-- ══ SIGNAL MARKERS ══ -->
+    <div class="signal-section" id="signal">
+      <div class="section-label">Signal &amp; Credibility</div>
+      <h2 class="section-title">Selected Experience</h2>
+      <p class="section-intro">Operational experience across industrial design, digital product, and enterprise technology — with leadership roles in both growth-stage and established organizations.</p>
+
+      <!-- Endorsement -->
+      <div class="endorsement-block">
+        <div class="endorsement-quote">
+          Rob operates at a level of product and design thinking that's rare in enterprise contexts — he bridges the physical and digital with a precision that most leaders who came up purely in software can't replicate. The work we did together redefined how we approach early-stage technology evaluation.
+        </div>
+        <div class="endorsement-attribution">
+          <div class="attr-dot">—</div>
+          <div>
+            <div class="attr-name">Colleague Endorsement</div>
+            <div class="attr-title">Add name + title from a former colleague, client, or direct report — even an informal one carries weight here.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Experience grid -->
+      <div class="experience-grid">
+
+        <div class="exp-item">
+          <div class="exp-domain">Industrial Design</div>
+          <div class="exp-org">DesignSell</div>
+          <div class="exp-role">Product &amp; Innovation Leadership — Commercializing automation and intelligence services in industrial design and digital asset domains</div>
+          <div class="exp-note">Built commercial pipeline for AI-assisted design workflow tools targeting mid-market manufacturing</div>
+        </div>
+
+        <div class="exp-item">
+          <div class="exp-domain">Enterprise Product</div>
+          <div class="exp-org">OpenClaw Platform</div>
+          <div class="exp-role">Product Architecture — Autonomous AI agent system designed for industrial design automation and digital asset intelligence workflows</div>
+          <div class="exp-note">Full-stack build: system architecture, deployment pipeline, and commercial use case development</div>
+        </div>
+
+        <div class="exp-item">
+          <div class="exp-domain">AI Integration</div>
+          <div class="exp-org">Enterprise AI Strategy</div>
+          <div class="exp-role">Led AI adoption diagnostic and integration roadmap for industrial manufacturing context</div>
+          <div class="exp-note">Workflow redesign-first approach — process archaeology before platform deployment</div>
+        </div>
+
+        <div class="exp-item">
+          <div class="exp-domain">Platform Product</div>
+          <div class="exp-org">Forge Design Review</div>
+          <div class="exp-role">VP Product — Enterprise UX/UI design review and approval platform for multi-stakeholder workflows</div>
+          <div class="exp-note">Led 0→1 product development, stakeholder alignment framework, and go-to-market positioning</div>
+        </div>
+
+        <div class="exp-item">
+          <div class="exp-domain">Digital Assets</div>
+          <div class="exp-org">Digital Asset Intelligence</div>
+          <div class="exp-role">Commercialization strategy for AI-assisted digital asset management tools in enterprise creative organizations</div>
+          <div class="exp-note">Market entry analysis and product-market fit assessment across mid-market and enterprise tiers</div>
+        </div>
+
+        <div class="exp-item">
+          <div class="exp-domain">Add Your Context</div>
+          <div class="exp-org">← Placeholder</div>
+          <div class="exp-role">Replace this card with a named employer, client, or engagement that carries recognition with your target audience</div>
+          <div class="exp-note">Company logos optional but high-signal if recognizable</div>
+        </div>
+
+      </div><!-- /.experience-grid -->
+    </div><!-- /.signal-section -->
+
+    <div class="footer-note">
+      <p>Available for conversations about strategic fit. No unsolicited pitches.</p>
+      <a href="index.html" class="back-link">Back to Work</a>
+    </div>
+
+  </div><!-- /.page-wrap -->
+
+</body>
+</html>
