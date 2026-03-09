@@ -613,6 +613,85 @@
     white-space: nowrap;
   }
 
+  /* ── ENGAGEMENT MODEL ── */
+  .engagement-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 2rem;
+  }
+
+  .engagement-item {
+    padding: 2.25rem 2rem;
+    border: 1px solid var(--border);
+    margin-bottom: -1px;
+    transition: background 0.4s ease;
+    position: relative;
+  }
+
+  .engagement-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .engagement-item:hover {
+    background: var(--accent-ghost);
+  }
+
+  .engagement-item:hover::before {
+    opacity: 1;
+  }
+
+  .engagement-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .engagement-type {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(200, 164, 110, 0.25);
+    padding: 0.2rem 0.55rem;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  .engagement-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.275rem;
+    color: var(--text-primary);
+  }
+
+  .engagement-desc {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--text-secondary);
+    max-width: 580px;
+    margin-bottom: 0.75rem;
+  }
+
+  .engagement-fit {
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--italic-light);
+    line-height: 1.6;
+    max-width: 580px;
+  }
+
   /* ── PORTFOLIO GATE ── */
   .portfolio-gate {
     margin-top: 2.5rem;
@@ -886,6 +965,21 @@
     border-color: var(--accent);
   }
 
+  .download-link {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    transition: color 0.3s ease;
+  }
+
+  .download-link:hover {
+    color: var(--accent);
+  }
+
   /* ── FOOTER ── */
   footer {
     padding: 2.25rem 3rem;
@@ -994,6 +1088,7 @@
     <li><a href="#approach">Approach</a></li>
     <li><a href="#domains">Domains</a></li>
     <li><a href="#lineage">Lineage</a></li>
+    <li><a href="#engagement">Engagement</a></li>
     <li><a href="#portfolio">Portfolio</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -1155,11 +1250,70 @@
   </div>
 </section>
 
+<!-- ENGAGEMENT MODEL -->
+<section id="engagement">
+  <div class="section-grid reveal">
+    <div>
+      <span class="section-number">§ 04</span>
+      <div class="section-label">Engagement</div>
+    </div>
+    <div class="section-content">
+      <h2>How We Work Together</h2>
+      <p>
+        Each engagement is scoped to where the organization is today and where it needs to be. No templated playbooks — every engagement begins with diagnosis before prescription.
+      </p>
+
+      <div class="engagement-grid">
+        <div class="engagement-item">
+          <div class="engagement-header">
+            <div class="engagement-type">Ongoing</div>
+            <div class="engagement-name">Fractional VP Product</div>
+          </div>
+          <div class="engagement-desc">Embedded product leadership on a part-time basis. Ideal for organizations building their first product function or navigating a critical transition — AI integration, platform redesign, new market entry. I operate as your VP Product 2–3 days per week, with full ownership of strategy, roadmap, and cross-functional execution.</div>
+          <div class="engagement-fit">Best fit: Growth-stage companies, PE portfolio companies, and enterprises launching new product lines.</div>
+        </div>
+
+        <div class="engagement-item">
+          <div class="engagement-header">
+            <div class="engagement-type">Retained</div>
+            <div class="engagement-name">Board &amp; Executive Advisory</div>
+          </div>
+          <div class="engagement-desc">Strategic counsel to C-suite and board-level leadership on technology adoption, product strategy, and innovation pipeline decisions. Not implementation — judgment. The kind of perspective that comes from having built physical products, digital systems, and the bridges between them.</div>
+          <div class="engagement-fit">Best fit: Boards evaluating technology investments, CEOs navigating digital transformation, PE partners assessing portfolio company product maturity.</div>
+        </div>
+
+        <div class="engagement-item">
+          <div class="engagement-header">
+            <div class="engagement-type">90 Days</div>
+            <div class="engagement-name">Strategic Assessment</div>
+          </div>
+          <div class="engagement-desc">A focused diagnostic of your product organization, technology stack, and market positioning. Delivered as a written assessment with prioritized recommendations, risk analysis, and a phased execution roadmap. Designed to give leadership a clear picture of where value is being left on the table and what to do about it.</div>
+          <div class="engagement-fit">Best fit: Pre-acquisition due diligence, post-merger integration, or any inflection point where the organization needs an honest external read.</div>
+        </div>
+
+        <div class="engagement-item">
+          <div class="engagement-header">
+            <div class="engagement-type">Project</div>
+            <div class="engagement-name">Product &amp; Design Leadership</div>
+          </div>
+          <div class="engagement-desc">Scoped engagements around specific outcomes — a product launch, a platform redesign, an AI integration strategy, or a design system buildout. Defined deliverables, defined timeline, defined success criteria. I bring the team, the process, and the accountability.</div>
+          <div class="engagement-fit">Best fit: Organizations with a clear problem and a defined window to solve it.</div>
+        </div>
+      </div>
+    </div>
+    <div class="section-margin">
+      <div class="margin-note" style="margin-top: 6rem;">
+        The right engagement model depends on the problem, not the budget. Start with the diagnosis.
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- PORTFOLIO GATE -->
 <section id="portfolio">
   <div class="section-grid-narrow reveal">
     <div>
-      <span class="section-number">§ 04</span>
+      <span class="section-number">§ 05</span>
       <div class="section-label">Portfolio</div>
     </div>
     <div class="section-content">
@@ -1249,7 +1403,7 @@
 
 <!-- CONTACT -->
 <section class="contact-section" id="contact">
-  <span class="section-number">§ 05</span>
+  <span class="section-number">§ 06</span>
   <div class="section-label" style="margin-bottom: 2rem;">Connect</div>
   <h2 class="contact-heading reveal">
     Building what's next requires partners who understand what's now.
@@ -1259,6 +1413,9 @@
     <div class="annotation" style="margin-left: 1rem;">
       Open to board advisory, fractional leadership, and strategic consulting engagements.
     </div>
+  </div>
+  <div class="reveal" style="margin-top: 1.5rem;">
+    <a href="RGM_Executive_One_Pager.pdf" target="_blank" class="download-link">↓ Download Executive One-Pager (PDF)</a>
   </div>
 </section>
 
@@ -1288,7 +1445,7 @@
 
   // ── Portfolio Access Gate ──
   // Default code: "openclaw2026" — change this to whatever you want
-  const ACCESS_HASH = "Momo&theBean";
+  const ACCESS_HASH = "Momo&TheBean";
 
   function checkAccess() {
     const input = document.getElementById('accessCode').value.trim();
