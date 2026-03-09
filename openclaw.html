@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw Case Study — Robert G. Murray</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Familjen+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0c;
+    --surface: #0f0f12;
+    --surface-raised: #161619;
+    --border: #222228;
+    --grid-line: rgba(200, 164, 110, 0.06);
+    --construction: rgba(200, 164, 110, 0.09);
+    --text-primary: #eeede7;
+    --text-secondary: #8a8990;
+    --text-tertiary: #55545c;
+    --text-annotation: #6a6970;
+    --accent: #c8a46e;
+    --accent-dim: rgba(200, 164, 110, 0.1);
+    --accent-ghost: rgba(200, 164, 110, 0.04);
+    --italic-light: #c8c7c0;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'Familjen Grotesk', sans-serif;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--black);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  ::selection { background: var(--accent); color: var(--black); }
+
+  .page-content { position: relative; z-index: 1; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 1.75rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    background: rgba(10, 10, 12, 0.85);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-name {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 0.9rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-primary);
+    text-decoration: none;
+  }
+
+  .nav-back {
+    font-family: var(--font-body); font-size: 0.78rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-secondary); text-decoration: none;
+    transition: color 0.3s ease;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+
+  .nav-back:hover { color: var(--text-primary); }
+  .nav-back-arrow { transition: transform 0.3s ease; }
+  .nav-back:hover .nav-back-arrow { transform: translateX(-3px); }
+
+  /* ── HERO ── */
+  .case-hero {
+    padding: max(4.5vh, 5rem) 3rem 4rem;
+    min-height: 60vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .case-hero::before {
+    content: '';
+    position: absolute; top: 20%; right: 8%;
+    width: 260px; height: 260px;
+    border: 1px solid var(--construction);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .case-meta {
+    display: flex; gap: 2rem; align-items: center;
+    margin-bottom: 1.75rem;
+    opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+
+  .case-type {
+    font-family: var(--font-body); font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent);
+  }
+
+  .case-date {
+    font-size: 0.82rem; color: var(--text-tertiary);
+  }
+
+  .case-confidential {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--text-tertiary);
+    border: 1px solid var(--border); padding: 0.25rem 0.6rem;
+  }
+
+  .case-hero h1 {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(2.2rem, 4.5vw, 4rem);
+    line-height: 1.08; letter-spacing: -0.03em;
+    color: var(--text-primary); max-width: 700px;
+    margin-bottom: 1rem;
+    opacity: 0; animation: fadeUp 0.8s ease forwards 0.4s;
+  }
+
+  .case-hero-sub {
+    font-family: var(--font-body); font-size: 1.2rem;
+    color: var(--text-secondary); max-width: 600px;
+    line-height: 1.7;
+    opacity: 0; animation: fadeUp 0.8s ease forwards 0.6s;
+  }
+
+  /* ── CASE SECTIONS ── */
+  .case-section {
+    padding: 5rem 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .case-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr 180px;
+    gap: 3rem;
+    max-width: 1200px;
+  }
+
+  .case-grid-narrow {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 3rem;
+    max-width: 1200px;
+  }
+
+  .case-sidebar {
+    padding-top: 0.3rem;
+  }
+
+  .case-section-number {
+    font-family: var(--font-display); font-size: 0.725rem;
+    font-weight: 700; color: var(--accent);
+    letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem;
+  }
+
+  .case-section-label {
+    font-family: var(--font-body); font-size: 0.93rem;
+    font-weight: 600; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-tertiary);
+  }
+
+  .case-content h2 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+    line-height: 1.15; letter-spacing: -0.02em;
+    color: var(--text-primary); margin-bottom: 1.5rem;
+  }
+
+  .case-content h3 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 1.25rem; color: var(--text-primary);
+    margin-top: 2rem; margin-bottom: 0.75rem;
+  }
+
+  .case-content p {
+    font-size: 1.125rem; line-height: 1.8;
+    color: var(--text-secondary); max-width: 620px;
+    margin-bottom: 1.25rem;
+  }
+
+  .case-content ul {
+    list-style: none; padding: 0; margin-bottom: 1.5rem;
+  }
+
+  .case-content ul li {
+    font-size: 1.05rem; line-height: 1.75;
+    color: var(--text-secondary); max-width: 620px;
+    padding: 0.6rem 0 0.6rem 1.5rem;
+    border-bottom: 1px solid rgba(34, 34, 40, 0.5);
+    position: relative;
+  }
+
+  .case-content ul li::before {
+    content: '';
+    position: absolute; left: 0; top: 1.05rem;
+    width: 6px; height: 6px;
+    border: 1px solid var(--accent);
+    border-radius: 50;
+  }
+
+  .case-content ul li:last-child { border-bottom: none; }
+
+  .case-content ul li strong {
+    color: var(--text-primary); font-weight: 600;
+  }
+
+  .margin-note {
+    font-family: var(--font-body); font-style: italic;
+    font-size: 1.095rem; color: var(--italic-light);
+    line-height: 1.55; max-width: 200px;
+  }
+
+  /* ── POSITIONING CALLOUT ── */
+  .positioning-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2.5rem 2.5rem 2.5rem 3rem;
+    margin: 2rem 0;
+    max-width: 620px;
+    position: relative;
+  }
+
+  .positioning-block::before {
+    content: '';
+    position: absolute; top: -1px; left: -1px; bottom: -1px;
+    width: 3px; background: var(--accent);
+  }
+
+  .positioning-block p {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 1.2rem; line-height: 1.5;
+    color: var(--text-primary); font-style: italic;
+  }
+
+  /* ── TIER GRID ── */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0; margin: 2rem 0;
+  }
+
+  .tier-item {
+    padding: 2rem 1.75rem;
+    border: 1px solid var(--border);
+    margin-right: -1px;
+    transition: background 0.4s ease;
+  }
+
+  .tier-item:hover { background: var(--accent-ghost); }
+
+  .tier-name {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 1.1rem; color: var(--accent); margin-bottom: 0.75rem;
+  }
+
+  .tier-desc {
+    font-size: 0.95rem; line-height: 1.65; color: var(--text-secondary);
+  }
+
+  /* ── PHASE TIMELINE ── */
+  .phase-timeline { margin: 2rem 0; }
+
+  .phase-item {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 2rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .phase-item:first-child { border-top: 1px solid var(--border); }
+
+  .phase-label {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 1rem; color: var(--accent);
+  }
+
+  .phase-time {
+    font-size: 0.82rem; color: var(--text-tertiary); margin-top: 0.25rem;
+  }
+
+  .phase-content p {
+    font-size: 1.05rem; line-height: 1.75;
+    color: var(--text-secondary); margin-bottom: 0.5rem;
+  }
+
+  .phase-content ul { margin-bottom: 0; }
+  .phase-content ul li { font-size: 1rem; }
+
+  /* ── METRICS GRID ── */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0; margin: 2rem 0;
+  }
+
+  .metric-item {
+    padding: 1.75rem;
+    border: 1px solid var(--border);
+    margin-right: -1px; margin-bottom: -1px;
+  }
+
+  .metric-target {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: 1.5rem; color: var(--accent); margin-bottom: 0.25rem;
+  }
+
+  .metric-name {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.5rem;
+  }
+
+  .metric-desc {
+    font-size: 0.88rem; line-height: 1.55; color: var(--text-secondary);
+  }
+
+  /* ── CTA / FOOTER ── */
+  .case-footer {
+    padding: 5rem 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .case-footer-inner {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    max-width: 1200px;
+  }
+
+  .case-footer h2 {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    line-height: 1.15; color: var(--text-primary); max-width: 500px;
+  }
+
+  .case-footer-contact {
+    text-align: right;
+  }
+
+  .case-footer-email {
+    display: inline-block; font-family: var(--font-body);
+    font-size: 1.1rem; font-weight: 500;
+    color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid rgba(200, 164, 110, 0.25);
+    transition: border-color 0.3s ease;
+  }
+
+  .case-footer-email:hover { border-color: var(--accent); }
+
+  footer {
+    padding: 2.25rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  footer p {
+    font-size: 0.91rem; color: var(--text-tertiary); letter-spacing: 0.05em;
+  }
+
+  .footer-links { display: flex; gap: 2rem; }
+
+  .footer-links a {
+    font-size: 0.91rem; color: var(--text-tertiary);
+    text-decoration: none; letter-spacing: 0.05em;
+    transition: color 0.3s ease;
+  }
+
+  .footer-links a:hover { color: var(--text-primary); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .case-grid { grid-template-columns: 180px 1fr; }
+    .case-grid .margin-note-col { display: none; }
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.25rem 1.5rem; }
+    .case-hero { padding: max(4.5vh, 5rem) 1.5rem 3rem; }
+    .case-section { padding: 3.5rem 1.5rem; }
+    .case-grid, .case-grid-narrow { grid-template-columns: 1fr; gap: 1.5rem; }
+    .tier-grid { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    .phase-item { grid-template-columns: 1fr; gap: 0.5rem; }
+    .case-footer { padding: 3.5rem 1.5rem; }
+    .case-footer-inner { flex-direction: column; gap: 2rem; align-items: flex-start; }
+    .case-footer-contact { text-align: left; }
+    footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; }
+    .case-hero::before { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .case-hero h1 { font-size: 2rem; }
+    .case-meta { flex-wrap: wrap; gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-content">
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-name">Robert G. Murray</a>
+  <a href="index.html#portfolio" class="nav-back">
+    <span class="nav-back-arrow">&larr;</span> Back to Portfolio
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="case-hero">
+  <div class="case-meta">
+    <span class="case-type">Case Study</span>
+    <span class="case-date">March 2026</span>
+    <span class="case-confidential">Confidential</span>
+  </div>
+  <h1>OpenClaw: Autonomous AI Agent System</h1>
+  <p class="case-hero-sub">
+    From concept to commercialization plan — an edge-deployed AI agent system targeting design-intensive enterprise workflows.
+  </p>
+</section>
+
+<!-- EXECUTIVE SUMMARY -->
+<section class="case-section">
+  <div class="case-grid reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 01</span>
+      <div class="case-section-label">Summary</div>
+    </div>
+    <div class="case-content">
+      <h2>Executive Summary</h2>
+      <p>OpenClaw is an autonomous AI agent system designed to transform how enterprises approach industrial design automation and digital asset intelligence. Built on a purpose-designed edge computing platform, OpenClaw operates at the intersection of three converging market forces: the maturation of large language models as operational tools, the enterprise demand for AI-native workflow automation, and the growing need for intelligent systems that can operate with minimal human supervision.</p>
+      <p>This case study outlines the commercialization path from working prototype to market-ready service offering, covering problem definition, market positioning, technical architecture, business model, and go-to-market strategy.</p>
+    </div>
+    <div class="margin-note-col">
+      <div class="margin-note" style="margin-top: 2rem;">
+        The prototype is operational. This document addresses the harder question: how to turn capability into a business.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE PROBLEM -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 02</span>
+      <div class="case-section-label">Problem</div>
+    </div>
+    <div class="case-content">
+      <h2>Market Pain</h2>
+      <p>Enterprise organizations face a compounding challenge: AI capabilities are advancing faster than organizations can absorb them. The gap between what AI can do in a demo and what it can do reliably inside an existing workflow is where billions of dollars in potential value stall out.</p>
+
+      <ul>
+        <li><strong>Fragmented tooling.</strong> Teams cobble together multiple AI services, APIs, and custom scripts with no unified orchestration layer. Each integration point introduces failure modes and maintenance burden.</li>
+        <li><strong>Human bottleneck.</strong> Current AI implementations still require constant human oversight for task sequencing, error handling, and quality validation. The promise of automation delivers a more complex version of the same manual work.</li>
+        <li><strong>Domain expertise gap.</strong> Generic AI platforms lack the contextual understanding to operate effectively in specialized verticals like industrial design, digital asset management, and technical content production.</li>
+        <li><strong>Edge deployment vacuum.</strong> Most enterprise AI requires cloud infrastructure with associated latency, cost, and data privacy concerns. Organizations that need AI at the edge have few production-ready options.</li>
+      </ul>
+
+      <h3>Who Experiences This</h3>
+      <p>Mid-market and enterprise organizations in design-intensive industries — manufacturing, architecture, consumer products, digital media — where creative and technical workflows intersect. Specifically: VP-level and above decision-makers responsible for operational efficiency, digital transformation, and innovation pipeline management.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE SOLUTION -->
+<section class="case-section">
+  <div class="case-grid reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 03</span>
+      <div class="case-section-label">Solution</div>
+    </div>
+    <div class="case-content">
+      <h2>What OpenClaw Is</h2>
+      <p>OpenClaw is an autonomous AI agent system that orchestrates multi-step workflows across industrial design, digital asset management, and technical content production. Unlike chatbot interfaces or single-purpose AI tools, OpenClaw operates as a persistent, goal-oriented system that can plan, execute, validate, and iterate on complex tasks with minimal human intervention.</p>
+
+      <h3>Core Capabilities</h3>
+      <ul>
+        <li><strong>Autonomous Task Orchestration.</strong> Decomposes complex objectives into executable task chains, manages dependencies, handles errors, and validates outputs against defined quality criteria.</li>
+        <li><strong>Domain-Specific Intelligence.</strong> Pre-configured knowledge frameworks for industrial design workflows, digital asset taxonomies, and technical content standards. Not a generic agent — a specialist.</li>
+        <li><strong>Edge-First Architecture.</strong> Designed to run on compact, cost-effective hardware (demonstrated on Raspberry Pi 5 with NVMe storage), enabling on-premise deployment with minimal infrastructure requirements.</li>
+        <li><strong>API-Native Integration.</strong> Connects to existing enterprise tools and services through standard APIs, functioning as an orchestration layer rather than a replacement for existing systems.</li>
+      </ul>
+
+      <h3>What Makes It Different</h3>
+      <p>The competitive differentiation is not the AI itself — it's the system design. OpenClaw combines the reasoning capabilities of frontier LLMs with a purpose-built orchestration framework that understands design-intensive workflows. The edge deployment model eliminates cloud dependency for core operations while maintaining API access to cloud services when needed.</p>
+    </div>
+    <div class="margin-note-col">
+      <div class="margin-note" style="margin-top: 8rem;">
+        Hybrid architecture: reliability of local processing with the capability of cloud AI.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECHNICAL ARCHITECTURE -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 04</span>
+      <div class="case-section-label">Architecture</div>
+    </div>
+    <div class="case-content">
+      <h2>Technical Architecture</h2>
+
+      <h3>Platform Layer</h3>
+      <ul>
+        <li><strong>Hardware.</strong> Raspberry Pi 5 (16GB), Argon NEO 5 BRED case, 1TB NVMe SSD via official Pi HAT. Total BOM under $300. Proven build with full OS boot from SSD.</li>
+        <li><strong>Runtime.</strong> Python-based agent framework with modular task executors, state management, and logging infrastructure.</li>
+        <li><strong>AI Layer.</strong> Claude API (Sonnet tier for operational tasks, Opus for complex reasoning) with intelligent model routing based on task complexity and cost sensitivity.</li>
+      </ul>
+
+      <h3>Integration Layer</h3>
+      <p>Standardized connector framework for enterprise tools — design software APIs, DAM platforms, content management systems, project management tools. Each connector exposes a consistent interface to the orchestration engine, allowing new integrations to be added without modifying core agent logic.</p>
+
+      <h3>Orchestration Layer</h3>
+      <p>The system's core intelligence: task decomposition, dependency management, error recovery, and output validation. This layer translates high-level objectives into sequenced, executable steps with defined success criteria at each stage.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET POSITIONING -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 05</span>
+      <div class="case-section-label">Positioning</div>
+    </div>
+    <div class="case-content">
+      <h2>Market Positioning</h2>
+
+      <h3>Competitive Landscape</h3>
+      <p>The AI agent market is early-stage and fragmented. Current players fall into three categories: general-purpose agent frameworks (LangChain, AutoGPT) that require significant customization, vertical SaaS tools adding AI features incrementally, and large-platform plays (Microsoft Copilot, Google Duet) that operate at the enterprise suite level. None are purpose-built for design-intensive workflows with edge deployment capability.</p>
+
+      <div class="positioning-block">
+        <p>For enterprise design and innovation teams who need autonomous AI workflow capabilities, OpenClaw is the only AI agent system built specifically for industrial design and digital asset workflows that can deploy at the edge with enterprise-grade reliability.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUSINESS MODEL -->
+<section class="case-section">
+  <div class="case-grid reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 06</span>
+      <div class="case-section-label">Business Model</div>
+    </div>
+    <div class="case-content">
+      <h2>Intelligence-as-a-Service</h2>
+      <p>OpenClaw is not a product sale — it's a managed intelligence service. Clients subscribe to outcomes (automated workflows, generated assets, operational intelligence) rather than purchasing software licenses. This aligns revenue with value delivery and creates recurring engagement.</p>
+
+      <div class="tier-grid">
+        <div class="tier-item">
+          <div class="tier-name">Foundation</div>
+          <div class="tier-desc">Managed deployment, standard workflow templates, defined task volume. Entry point for proof-of-value engagement.</div>
+        </div>
+        <div class="tier-item">
+          <div class="tier-name">Professional</div>
+          <div class="tier-desc">Custom workflow development, expanded task volume, priority support, integration consulting.</div>
+        </div>
+        <div class="tier-item">
+          <div class="tier-name">Enterprise</div>
+          <div class="tier-desc">Dedicated instance, custom model fine-tuning, on-premise deployment support, SLA guarantees, strategic advisory.</div>
+        </div>
+      </div>
+
+      <h3>Unit Economics</h3>
+      <p>Hardware cost per deployed unit is sub-$300. Primary variable cost is API consumption, which scales directly with task volume and can be optimized through intelligent model routing. Target gross margin: 70%+ at scale.</p>
+    </div>
+    <div class="margin-note-col">
+      <div class="margin-note" style="margin-top: 2rem;">
+        Revenue aligned with value delivery. Not selling software — selling outcomes.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GO-TO-MARKET -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 07</span>
+      <div class="case-section-label">Go-to-Market</div>
+    </div>
+    <div class="case-content">
+      <h2>Go-to-Market Strategy</h2>
+
+      <div class="phase-timeline">
+        <div class="phase-item">
+          <div>
+            <div class="phase-label">Phase 1: Prove</div>
+            <div class="phase-time">Months 1–6</div>
+          </div>
+          <div class="phase-content">
+            <ul>
+              <li>Deploy OpenClaw internally for content automation pipeline — newsletter generation, research synthesis, asset production.</li>
+              <li>Document measurable outcomes: time saved, cost per asset, quality metrics, error rates.</li>
+              <li>Build the case study that becomes the primary sales asset.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase-item">
+          <div>
+            <div class="phase-label">Phase 2: Pilot</div>
+            <div class="phase-time">Months 6–12</div>
+          </div>
+          <div class="phase-content">
+            <ul>
+              <li>Engage 3–5 pilot clients from professional network — design agencies, manufacturing firms, digital media companies.</li>
+              <li>Define and validate standard workflow templates for each vertical.</li>
+              <li>Iterate on pricing, support model, and integration requirements based on real-world friction.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase-item">
+          <div>
+            <div class="phase-label">Phase 3: Scale</div>
+            <div class="phase-time">Months 12–24</div>
+          </div>
+          <div class="phase-content">
+            <ul>
+              <li>Formalize service offering with standardized onboarding, SLAs, and support infrastructure.</li>
+              <li>Expand vertical coverage beyond initial design/asset focus.</li>
+              <li>Evaluate channel partnerships and potential PE/venture interest for accelerated growth.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUCCESS METRICS -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 08</span>
+      <div class="case-section-label">Metrics</div>
+    </div>
+    <div class="case-content">
+      <h2>Success Metrics</h2>
+
+      <div class="metrics-grid">
+        <div class="metric-item">
+          <div class="metric-target">&gt;85%</div>
+          <div class="metric-name">Task Completion Rate</div>
+          <div class="metric-desc">Tasks completed autonomously without human intervention for standard workflows.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-target">&lt;30 days</div>
+          <div class="metric-name">Time-to-Value</div>
+          <div class="metric-desc">From client onboarding to first measurable workflow automation.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-target">3x</div>
+          <div class="metric-name">Cost Efficiency</div>
+          <div class="metric-desc">All-in cost per completed workflow vs. manual equivalent.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-target">&gt;110%</div>
+          <div class="metric-name">Net Revenue Retention</div>
+          <div class="metric-desc">Annual revenue growth from existing clients through tier upgrades and expansion.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RISKS -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 09</span>
+      <div class="case-section-label">Risks</div>
+    </div>
+    <div class="case-content">
+      <h2>Risks &amp; Mitigations</h2>
+      <ul>
+        <li><strong>API dependency.</strong> Core intelligence relies on third-party LLM APIs. Mitigation: multi-provider architecture with fallback routing; evaluate local model deployment as open-source models mature.</li>
+        <li><strong>Market timing.</strong> Enterprise AI agent adoption is early. Mitigation: start with high-trust network; position as managed service with lower adoption barrier; build proof points before scaling.</li>
+        <li><strong>Competitive encroachment.</strong> Large platforms may add similar capabilities. Mitigation: vertical specialization creates defensibility that horizontal platforms cannot easily replicate.</li>
+        <li><strong>Scaling operations.</strong> Service model requires hands-on engagement. Mitigation: invest in templated workflows, automated onboarding, and self-service monitoring before scaling client base beyond capacity.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CONCLUSION -->
+<section class="case-section">
+  <div class="case-grid reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 10</span>
+      <div class="case-section-label">Conclusion</div>
+    </div>
+    <div class="case-content">
+      <h2>Most Advanced Yet Acceptable</h2>
+      <p>OpenClaw represents the application of a core thesis: emerging technologies become enterprise-ready not through incremental feature additions, but through purposeful system design that respects how organizations actually adopt change. The same MAYA principle that governs great industrial design governs great technology adoption.</p>
+      <p>The path from working prototype to commercial service is defined not by technical capability — which is already demonstrated — but by rigorous proof-of-value, disciplined market entry, and the patience to build credibility through measurable outcomes before scaling.</p>
+    </div>
+    <div class="margin-note-col">
+      <div class="margin-note" style="margin-top: 2rem;">
+        The hardest part isn't building the technology. It's building the trust.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FOOTER -->
+<section class="case-footer">
+  <div class="case-footer-inner reveal">
+    <h2>Interested in discussing OpenClaw or similar engagements?</h2>
+    <div class="case-footer-contact">
+      <a href="mailto:rgmurray@designsell.org" class="case-footer-email">rgmurray@designsell.org</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>&copy; 2026 Robert G. Murray</p>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="https://www.linkedin.com/in/robert-murray-b7a8515/" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+</footer>
+
+</div>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

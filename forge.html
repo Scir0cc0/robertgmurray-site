@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forge Case Study — Robert G. Murray</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Familjen+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0c;
+    --surface: #0f0f12;
+    --surface-raised: #161619;
+    --border: #222228;
+    --grid-line: rgba(200, 164, 110, 0.06);
+    --construction: rgba(200, 164, 110, 0.09);
+    --text-primary: #eeede7;
+    --text-secondary: #8a8990;
+    --text-tertiary: #55545c;
+    --accent: #c8a46e;
+    --accent-dim: rgba(200, 164, 110, 0.1);
+    --accent-ghost: rgba(200, 164, 110, 0.04);
+    --italic-light: #c8c7c0;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'Familjen Grotesk', sans-serif;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 16px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body { background-color: var(--black); color: var(--text-primary); font-family: var(--font-body); font-weight: 400; line-height: 1.6; overflow-x: hidden; position: relative; }
+  body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+  ::selection { background: var(--accent); color: var(--black); }
+  .page-content { position: relative; z-index: 1; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1.75rem 3rem; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); background: rgba(10, 10, 12, 0.85); border-bottom: 1px solid var(--border); }
+  .nav-name { font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-primary); text-decoration: none; }
+  .nav-back { font-family: var(--font-body); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; display: flex; align-items: center; gap: 0.5rem; }
+  .nav-back:hover { color: var(--text-primary); }
+  .nav-back-arrow { transition: transform 0.3s ease; }
+  .nav-back:hover .nav-back-arrow { transform: translateX(-3px); }
+
+  .case-hero { padding: max(4.5vh, 5rem) 3rem 4rem; min-height: 55vh; display: flex; flex-direction: column; justify-content: flex-end; position: relative; border-bottom: 1px solid var(--border); }
+  .case-hero::before { content: ''; position: absolute; top: 18%; right: 6%; width: 280px; height: 280px; border: 1px solid var(--construction); border-radius: 50%; pointer-events: none; }
+  .case-meta { display: flex; gap: 2rem; align-items: center; margin-bottom: 1.75rem; opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s; }
+  .case-type { font-family: var(--font-body); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+  .case-date { font-size: 0.82rem; color: var(--text-tertiary); }
+  .case-hero h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.2rem, 4.5vw, 4rem); line-height: 1.08; letter-spacing: -0.03em; color: var(--text-primary); max-width: 750px; margin-bottom: 1rem; opacity: 0; animation: fadeUp 0.8s ease forwards 0.4s; }
+  .case-hero-sub { font-family: var(--font-body); font-size: 1.2rem; color: var(--text-secondary); max-width: 620px; line-height: 1.7; opacity: 0; animation: fadeUp 0.8s ease forwards 0.6s; }
+
+  .case-section { padding: 5rem 3rem; border-bottom: 1px solid var(--border); }
+  .case-grid { display: grid; grid-template-columns: 220px 1fr 180px; gap: 3rem; max-width: 1200px; }
+  .case-grid-narrow { display: grid; grid-template-columns: 220px 1fr; gap: 3rem; max-width: 1200px; }
+  .case-sidebar { padding-top: 0.3rem; }
+  .case-section-number { font-family: var(--font-display); font-size: 0.725rem; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem; }
+  .case-section-label { font-family: var(--font-body); font-size: 0.93rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-tertiary); }
+
+  .case-content h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.6rem, 2.5vw, 2.2rem); line-height: 1.15; letter-spacing: -0.02em; color: var(--text-primary); margin-bottom: 1.5rem; }
+  .case-content h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; color: var(--text-primary); margin-top: 2rem; margin-bottom: 0.75rem; }
+  .case-content p { font-size: 1.125rem; line-height: 1.8; color: var(--text-secondary); max-width: 620px; margin-bottom: 1.25rem; }
+  .case-content ul { list-style: none; padding: 0; margin-bottom: 1.5rem; }
+  .case-content ul li { font-size: 1.05rem; line-height: 1.75; color: var(--text-secondary); max-width: 620px; padding: 0.6rem 0 0.6rem 1.5rem; border-bottom: 1px solid rgba(34, 34, 40, 0.5); position: relative; }
+  .case-content ul li::before { content: ''; position: absolute; left: 0; top: 1.05rem; width: 6px; height: 6px; border: 1px solid var(--accent); border-radius: 50%; }
+  .case-content ul li:last-child { border-bottom: none; }
+  .case-content ul li strong { color: var(--text-primary); font-weight: 600; }
+
+  .margin-note { font-family: var(--font-body); font-style: italic; font-size: 1.095rem; color: var(--italic-light); line-height: 1.55; max-width: 200px; }
+
+  /* Persona Cards */
+  .persona-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 2rem 0; }
+  .persona-card { padding: 2rem 1.75rem; border: 1px solid var(--border); margin-right: -1px; transition: background 0.4s ease; }
+  .persona-card:hover { background: var(--accent-ghost); }
+  .persona-role { font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--accent); margin-bottom: 0.25rem; }
+  .persona-title { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.75rem; }
+  .persona-desc { font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0.75rem; }
+  .persona-pain { font-size: 0.88rem; font-style: italic; color: var(--italic-light); line-height: 1.55; }
+  .persona-pain::before { content: '"'; }
+  .persona-pain::after { content: '"'; }
+
+  /* Heuristic items */
+  .heuristic-grid { margin: 2rem 0; }
+  .heuristic-item { display: grid; grid-template-columns: 60px 1fr; gap: 1.25rem; padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
+  .heuristic-item:first-child { border-top: 1px solid var(--border); }
+  .heuristic-severity { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; }
+  .severity-critical { color: #c06a5e; }
+  .severity-major { color: var(--accent); }
+  .severity-minor { color: var(--text-tertiary); }
+  .heuristic-title { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; color: var(--text-primary); margin-bottom: 0.35rem; }
+  .heuristic-desc { font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); }
+
+  /* Roadmap */
+  .roadmap { margin: 2rem 0; }
+  .roadmap-phase { display: grid; grid-template-columns: 120px 1fr; gap: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--border); }
+  .roadmap-phase:first-child { border-top: 1px solid var(--border); }
+  .roadmap-label { font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--accent); }
+  .roadmap-scope { font-size: 0.82rem; color: var(--text-tertiary); margin-top: 0.25rem; }
+  .roadmap-items { list-style: none; padding: 0; }
+  .roadmap-items li { font-size: 1rem; line-height: 1.7; color: var(--text-secondary); padding: 0.4rem 0; }
+  .roadmap-items li strong { color: var(--text-primary); }
+
+  /* Metrics */
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 2rem 0; }
+  .metric-item { padding: 1.75rem; border: 1px solid var(--border); margin-right: -1px; margin-bottom: -1px; }
+  .metric-before { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: #c06a5e; margin-bottom: 0.15rem; }
+  .metric-after { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--accent); margin-bottom: 0.25rem; }
+  .metric-name { font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.35rem; }
+  .metric-desc { font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary); }
+
+  /* Callout */
+  .callout-block { background: var(--surface); border: 1px solid var(--border); padding: 2.5rem 2.5rem 2.5rem 3rem; margin: 2rem 0; max-width: 620px; position: relative; }
+  .callout-block::before { content: ''; position: absolute; top: -1px; left: -1px; bottom: -1px; width: 3px; background: var(--accent); }
+  .callout-block p { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; line-height: 1.5; color: var(--text-primary); }
+
+  .case-footer { padding: 5rem 3rem; border-bottom: 1px solid var(--border); }
+  .case-footer-inner { display: flex; justify-content: space-between; align-items: flex-end; max-width: 1200px; }
+  .case-footer h2 { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.15; color: var(--text-primary); max-width: 500px; }
+  .case-footer-email { display: inline-block; font-family: var(--font-body); font-size: 1.1rem; font-weight: 500; color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(200, 164, 110, 0.25); transition: border-color 0.3s ease; }
+  .case-footer-email:hover { border-color: var(--accent); }
+
+  footer { padding: 2.25rem 3rem; display: flex; justify-content: space-between; align-items: center; }
+  footer p { font-size: 0.91rem; color: var(--text-tertiary); letter-spacing: 0.05em; }
+  .footer-links { display: flex; gap: 2rem; }
+  .footer-links a { font-size: 0.91rem; color: var(--text-tertiary); text-decoration: none; letter-spacing: 0.05em; transition: color 0.3s ease; }
+  .footer-links a:hover { color: var(--text-primary); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 1100px) { .case-grid { grid-template-columns: 180px 1fr; } .case-grid .margin-note-col { display: none; } }
+  @media (max-width: 900px) { nav { padding: 1.25rem 1.5rem; } .case-hero { padding: max(4.5vh, 5rem) 1.5rem 3rem; } .case-section { padding: 3.5rem 1.5rem; } .case-grid, .case-grid-narrow { grid-template-columns: 1fr; gap: 1.5rem; } .persona-grid, .metrics-grid { grid-template-columns: 1fr; } .roadmap-phase { grid-template-columns: 1fr; gap: 0.5rem; } .case-footer { padding: 3.5rem 1.5rem; } .case-footer-inner { flex-direction: column; gap: 2rem; align-items: flex-start; } footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; } .case-hero::before { display: none; } .heuristic-item { grid-template-columns: 40px 1fr; } }
+  @media (max-width: 600px) { .case-hero h1 { font-size: 2rem; } .case-meta { flex-wrap: wrap; gap: 1rem; } }
+</style>
+</head>
+<body>
+<div class="page-content">
+
+<nav>
+  <a href="index.html" class="nav-name">Robert G. Murray</a>
+  <a href="index.html#portfolio" class="nav-back"><span class="nav-back-arrow">&larr;</span> Back to Portfolio</a>
+</nav>
+
+<section class="case-hero">
+  <div class="case-meta">
+    <span class="case-type">UX/UI Product Management</span>
+    <span class="case-date">March 2026</span>
+  </div>
+  <h1>Forge: Redesigning the Enterprise Design Review Experience</h1>
+  <p class="case-hero-sub">A product management case study — from discovery research through redesign, roadmap, and projected impact — for a fictional enterprise design review platform with a critical adoption problem.</p>
+</section>
+
+<!-- CONTEXT -->
+<section class="case-section">
+  <div class="case-grid reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 01</span>
+      <div class="case-section-label">Context</div>
+    </div>
+    <div class="case-content">
+      <h2>The Product</h2>
+      <p>Forge is an enterprise SaaS platform used by manufacturing and consumer product companies to manage design reviews, stakeholder approvals, and revision tracking. It sits at the intersection of design tooling and Product Lifecycle Management (PLM) — where creative decisions meet engineering constraints and business sign-off.</p>
+      <p>The platform has strong enterprise contracts and deep integration with CAD and ERP systems. But it has a serious problem: adoption is collapsing. Seat utilization dropped from 74% to 41% over 18 months. Designers avoid it, stakeholders can't navigate it, and the approval workflow that justifies the product's existence is buried under layers of complexity.</p>
+
+      <h3>My Role</h3>
+      <p>VP Product, brought in to diagnose the adoption failure and lead the redesign from research through launch. Responsible for strategy, prioritization, cross-functional alignment, and outcome measurement.</p>
+    </div>
+    <div class="margin-note-col">
+      <div class="margin-note" style="margin-top: 2rem;">The product worked. People just stopped using it. That's a design problem, not a feature problem.</div>
+    </div>
+  </div>
+</section>
+
+<!-- DISCOVERY -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 02</span>
+      <div class="case-section-label">Discovery</div>
+    </div>
+    <div class="case-content">
+      <h2>Research &amp; Discovery</h2>
+      <p>Before proposing solutions, the team needed to understand why adoption was failing. We conducted 24 user interviews across 6 client organizations, analyzed 90 days of session telemetry, and ran a competitive audit against 5 alternative workflows teams had adopted informally.</p>
+
+      <h3>Key Findings</h3>
+      <ul>
+        <li><strong>Navigation collapse.</strong> 67% of users couldn't locate the approval workflow within 3 clicks. The information architecture had grown organically over 4 years without restructuring — what started as a clean hierarchy had become a maze of nested menus and redundant paths.</li>
+        <li><strong>Context switching penalty.</strong> Designers had to leave their primary tools (Solidworks, Figma, Adobe CC) to upload, annotate, and submit work for review. Every review cycle required 12+ minutes of file management before any actual review happened.</li>
+        <li><strong>Notification blindness.</strong> Reviewers received an average of 34 notifications per day from Forge, with no priority differentiation. 78% of review requests were ignored for 48+ hours, creating project bottlenecks attributed to the tool rather than the people.</li>
+        <li><strong>Role confusion.</strong> The same interface served designers uploading work, engineers reviewing specifications, and VPs approving milestones. None of these users shared the same mental model, yet all saw the same dashboard.</li>
+        <li><strong>Shadow workflows.</strong> 5 of 6 client organizations had developed informal workarounds using Slack, email attachments, and shared drives — routing around Forge entirely for day-to-day reviews and only using it for compliance documentation.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PERSONAS -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 03</span>
+      <div class="case-section-label">Users</div>
+    </div>
+    <div class="case-content">
+      <h2>User Personas</h2>
+      <p>Three distinct user types emerged from research, each with fundamentally different needs, workflows, and definitions of success.</p>
+
+      <div class="persona-grid">
+        <div class="persona-card">
+          <div class="persona-role">Primary Creator</div>
+          <div class="persona-title">The Designer</div>
+          <div class="persona-desc">Uploads work, manages revisions, responds to feedback. Needs frictionless submission and clear status visibility.</div>
+          <div class="persona-pain">I spend more time managing files in Forge than actually designing. It feels like the tool is working against me.</div>
+        </div>
+        <div class="persona-card">
+          <div class="persona-role">Technical Reviewer</div>
+          <div class="persona-title">The Engineer</div>
+          <div class="persona-desc">Reviews designs for feasibility, tolerances, and specifications. Needs side-by-side comparison and inline annotation.</div>
+          <div class="persona-pain">I can't see what changed between versions without opening three different screens. So I just ask the designer to walk me through it on Zoom.</div>
+        </div>
+        <div class="persona-card">
+          <div class="persona-role">Decision Maker</div>
+          <div class="persona-title">The VP Approver</div>
+          <div class="persona-desc">Approves milestone gates and budget allocation. Needs a 30-second summary, not a deep dive into revisions.</div>
+          <div class="persona-pain">I don't need to see every version. I need to see the recommendation, the risk, and where to click 'approve.'</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HEURISTIC EVALUATION -->
+<section class="case-section">
+  <div class="case-grid reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 04</span>
+      <div class="case-section-label">Evaluation</div>
+    </div>
+    <div class="case-content">
+      <h2>Heuristic Evaluation</h2>
+      <p>A structured evaluation against Nielsen's 10 usability heuristics revealed systemic issues across the platform. The six highest-severity findings:</p>
+
+      <div class="heuristic-grid">
+        <div class="heuristic-item">
+          <div class="heuristic-severity severity-critical">C</div>
+          <div>
+            <div class="heuristic-title">No role-based views</div>
+            <div class="heuristic-desc">All users see the same dashboard regardless of role. Designers, engineers, and executives have no dedicated entry point optimized for their workflow.</div>
+          </div>
+        </div>
+        <div class="heuristic-item">
+          <div class="heuristic-severity severity-critical">C</div>
+          <div>
+            <div class="heuristic-title">Buried approval workflow</div>
+            <div class="heuristic-desc">The core value proposition — design approval — requires 5+ clicks from the dashboard. No persistent status indicator shows pending approvals.</div>
+          </div>
+        </div>
+        <div class="heuristic-item">
+          <div class="heuristic-severity severity-critical">C</div>
+          <div>
+            <div class="heuristic-title">No version comparison</div>
+            <div class="heuristic-desc">Reviewing changes between design iterations requires opening each version separately. No diff view, overlay, or change summary exists.</div>
+          </div>
+        </div>
+        <div class="heuristic-item">
+          <div class="heuristic-severity severity-major">M</div>
+          <div>
+            <div class="heuristic-title">Notification overload</div>
+            <div class="heuristic-desc">No priority hierarchy in notifications. Routine updates and critical approval requests arrive with identical presentation.</div>
+          </div>
+        </div>
+        <div class="heuristic-item">
+          <div class="heuristic-severity severity-major">M</div>
+          <div>
+            <div class="heuristic-title">Upload friction</div>
+            <div class="heuristic-desc">File submission requires 7 form fields before upload begins. Most fields have sensible defaults that could be auto-populated from project context.</div>
+          </div>
+        </div>
+        <div class="heuristic-item">
+          <div class="heuristic-severity severity-major">M</div>
+          <div>
+            <div class="heuristic-title">No mobile experience</div>
+            <div class="heuristic-desc">VP approvers frequently need to act on approvals from mobile devices. The current interface is desktop-only with no responsive adaptation.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="margin-note-col">
+      <div class="margin-note" style="margin-top: 2rem;">C = Critical (blocks core workflow), M = Major (significant friction, workaround required).</div>
+    </div>
+  </div>
+</section>
+
+<!-- REDESIGN -->
+<section class="case-section">
+  <div class="case-grid reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 05</span>
+      <div class="case-section-label">Redesign</div>
+    </div>
+    <div class="case-content">
+      <h2>Proposed Redesign</h2>
+      <p>The redesign is organized around a single principle: every user should reach their primary action within 2 clicks of login. This required restructuring the information architecture around roles rather than features.</p>
+
+      <h3>Role-Based Dashboards</h3>
+      <p>Three distinct entry experiences replace the universal dashboard. Each surfaces only the information and actions relevant to the user's role, with progressive disclosure for deeper functionality. Designers see their active projects and submission status. Engineers see pending reviews with change summaries. VPs see a decision queue with recommendations.</p>
+
+      <h3>Approval Flow Redesign</h3>
+      <p>The approval workflow moves from a buried settings menu to a persistent status bar visible on every screen. Pending approvals surface with context — what changed, who's waiting, what's the deadline. One-click approval from the notification itself, including a mobile-optimized approval card for VP users.</p>
+
+      <h3>Version Comparison Engine</h3>
+      <p>A side-by-side diff view for design iterations with overlay, slider, and annotation tools. Engineers can review changes visually without opening separate files. Change summaries auto-generate from revision metadata, highlighting what's new, modified, or removed.</p>
+
+      <h3>Smart Notifications</h3>
+      <p>Notification triage engine with three priority tiers: action required (you're blocking someone), FYI (relevant to your work), and archive (system updates). Digest mode available for non-urgent items. Critical notifications persist until acknowledged.</p>
+
+      <h3>Streamlined Upload</h3>
+      <p>Upload reduced from 7 fields to 2 — file and project. All other metadata auto-populates from project context, file type detection, and user history. Drag-and-drop from file system or direct integration with design tool plugins.</p>
+    </div>
+    <div class="margin-note-col">
+      <div class="margin-note" style="margin-top: 2rem;">The goal isn't more features. It's fewer decisions required to accomplish the task.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 06</span>
+      <div class="case-section-label">Roadmap</div>
+    </div>
+    <div class="case-content">
+      <h2>Prioritized Roadmap</h2>
+      <p>Scope discipline is the hardest part of any redesign. The roadmap is structured around impact on the core adoption metric — seat utilization — with each phase building on validated outcomes from the previous one.</p>
+
+      <div class="roadmap">
+        <div class="roadmap-phase">
+          <div>
+            <div class="roadmap-label">V1</div>
+            <div class="roadmap-scope">Weeks 1–8</div>
+          </div>
+          <div>
+            <ul class="roadmap-items">
+              <li><strong>Role-based dashboards</strong> — three distinct entry experiences replacing the universal view.</li>
+              <li><strong>Approval status bar</strong> — persistent, visible on every screen, one-click approve.</li>
+              <li><strong>Upload simplification</strong> — reduce to 2 fields with auto-population.</li>
+              <li><strong>Notification priority tiers</strong> — action required vs. FYI vs. archive.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="roadmap-phase">
+          <div>
+            <div class="roadmap-label">V2</div>
+            <div class="roadmap-scope">Weeks 9–16</div>
+          </div>
+          <div>
+            <ul class="roadmap-items">
+              <li><strong>Version comparison engine</strong> — side-by-side diff with overlay and annotations.</li>
+              <li><strong>Mobile approval cards</strong> — responsive approval flow for VP users.</li>
+              <li><strong>Design tool plugins</strong> — direct submission from Solidworks, Figma, Adobe CC.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="roadmap-phase">
+          <div>
+            <div class="roadmap-label">V3</div>
+            <div class="roadmap-scope">Weeks 17–24</div>
+          </div>
+          <div>
+            <ul class="roadmap-items">
+              <li><strong>Smart notification digests</strong> — ML-driven priority scoring based on user behavior.</li>
+              <li><strong>Automated change summaries</strong> — AI-generated revision notes from file diffs.</li>
+              <li><strong>Analytics dashboard</strong> — review cycle time, bottleneck identification, team velocity.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTED IMPACT -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 07</span>
+      <div class="case-section-label">Impact</div>
+    </div>
+    <div class="case-content">
+      <h2>Projected Impact</h2>
+      <p>Targets are based on benchmark data from comparable enterprise UX redesigns and validated against the specific friction points identified in discovery research.</p>
+
+      <div class="metrics-grid">
+        <div class="metric-item">
+          <div class="metric-before">41% →</div>
+          <div class="metric-after">68%</div>
+          <div class="metric-name">Seat Utilization</div>
+          <div class="metric-desc">Primary adoption metric. Role-based views eliminate the "I don't know where to start" dropout.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-before">5+ clicks →</div>
+          <div class="metric-after">1 click</div>
+          <div class="metric-name">Approval Access</div>
+          <div class="metric-desc">Persistent status bar and one-click approval eliminate the buried workflow problem.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-before">12 min →</div>
+          <div class="metric-after">2 min</div>
+          <div class="metric-name">Upload Time</div>
+          <div class="metric-desc">Field reduction and auto-population remove the file management tax on every review cycle.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-before">48+ hrs →</div>
+          <div class="metric-after">&lt;8 hrs</div>
+          <div class="metric-name">Review Response</div>
+          <div class="metric-desc">Priority notifications and mobile approvals compress the review bottleneck.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-before">5/6 →</div>
+          <div class="metric-after">1/6</div>
+          <div class="metric-name">Shadow Workflows</div>
+          <div class="metric-desc">Clients using informal workarounds to route around Forge. Target: make the tool faster than the workaround.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-before">2.1 →</div>
+          <div class="metric-after">4.2</div>
+          <div class="metric-name">NPS Score (internal)</div>
+          <div class="metric-desc">User satisfaction measured quarterly across all three persona types.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONCLUSION -->
+<section class="case-section">
+  <div class="case-grid reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 08</span>
+      <div class="case-section-label">Conclusion</div>
+    </div>
+    <div class="case-content">
+      <h2>The Product Worked. The Experience Didn't.</h2>
+      <p>Forge's adoption failure wasn't a technology problem — it was a design problem. The platform had the right capabilities but the wrong experience. Users didn't need more features; they needed fewer barriers between intent and action.</p>
+      <p>The redesign applies the same principle that governs great industrial design: every element earns its place, every interaction serves a purpose, and the system respects how people actually work rather than how an architect imagined they would.</p>
+
+      <div class="callout-block">
+        <p>The most expensive feature in any enterprise product is the one that makes users avoid the product entirely.</p>
+      </div>
+    </div>
+    <div class="margin-note-col">
+      <div class="margin-note" style="margin-top: 2rem;">Adoption is a design metric. If people aren't using it, the design is wrong — regardless of what the feature list says.</div>
+    </div>
+  </div>
+</section>
+
+<section class="case-footer">
+  <div class="case-footer-inner reveal">
+    <h2>Interested in discussing product strategy or UX leadership?</h2>
+    <div><a href="mailto:rgmurray@designsell.org" class="case-footer-email">rgmurray@designsell.org</a></div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Robert G. Murray</p>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="https://www.linkedin.com/in/robert-murray-b7a8515/" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+</footer>
+
+</div>
+<script>
+  const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

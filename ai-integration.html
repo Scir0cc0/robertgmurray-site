@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Integration Strategy — Robert G. Murray</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Familjen+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0c;
+    --surface: #0f0f12;
+    --surface-raised: #161619;
+    --border: #222228;
+    --grid-line: rgba(200, 164, 110, 0.06);
+    --construction: rgba(200, 164, 110, 0.09);
+    --text-primary: #eeede7;
+    --text-secondary: #8a8990;
+    --text-tertiary: #55545c;
+    --accent: #c8a46e;
+    --accent-dim: rgba(200, 164, 110, 0.1);
+    --accent-ghost: rgba(200, 164, 110, 0.04);
+    --italic-light: #c8c7c0;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'Familjen Grotesk', sans-serif;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 16px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body { background-color: var(--black); color: var(--text-primary); font-family: var(--font-body); font-weight: 400; line-height: 1.6; overflow-x: hidden; position: relative; }
+  body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+  ::selection { background: var(--accent); color: var(--black); }
+  .page-content { position: relative; z-index: 1; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1.75rem 3rem; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); background: rgba(10, 10, 12, 0.85); border-bottom: 1px solid var(--border); }
+  .nav-name { font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-primary); text-decoration: none; }
+  .nav-back { font-family: var(--font-body); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; display: flex; align-items: center; gap: 0.5rem; }
+  .nav-back:hover { color: var(--text-primary); }
+  .nav-back-arrow { transition: transform 0.3s ease; }
+  .nav-back:hover .nav-back-arrow { transform: translateX(-3px); }
+
+  .case-hero { padding: max(4.5vh, 5rem) 3rem 4rem; min-height: 55vh; display: flex; flex-direction: column; justify-content: flex-end; position: relative; border-bottom: 1px solid var(--border); }
+  .case-hero::before { content: ''; position: absolute; top: 16%; right: 7%; width: 300px; height: 300px; border: 1px solid var(--construction); border-radius: 50%; pointer-events: none; }
+  .case-hero::after { content: ''; position: absolute; top: calc(16% + 50px); right: calc(7% + 50px); width: 200px; height: 200px; border: 1px solid var(--construction); border-radius: 50%; pointer-events: none; }
+  .case-meta { display: flex; gap: 2rem; align-items: center; margin-bottom: 1.75rem; opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s; }
+  .case-type { font-family: var(--font-body); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+  .case-date { font-size: 0.82rem; color: var(--text-tertiary); }
+  .case-hero h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(2rem, 4.2vw, 3.6rem); line-height: 1.08; letter-spacing: -0.03em; color: var(--text-primary); max-width: 780px; margin-bottom: 1rem; opacity: 0; animation: fadeUp 0.8s ease forwards 0.4s; }
+  .case-hero-sub { font-family: var(--font-body); font-size: 1.2rem; color: var(--text-secondary); max-width: 640px; line-height: 1.7; opacity: 0; animation: fadeUp 0.8s ease forwards 0.6s; }
+
+  .case-section { padding: 5rem 3rem; border-bottom: 1px solid var(--border); }
+  .case-grid { display: grid; grid-template-columns: 220px 1fr 180px; gap: 3rem; max-width: 1200px; }
+  .case-grid-narrow { display: grid; grid-template-columns: 220px 1fr; gap: 3rem; max-width: 1200px; }
+  .case-sidebar { padding-top: 0.3rem; }
+  .case-section-number { font-family: var(--font-display); font-size: 0.725rem; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem; }
+  .case-section-label { font-family: var(--font-body); font-size: 0.93rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-tertiary); }
+
+  .case-content h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.6rem, 2.5vw, 2.2rem); line-height: 1.15; letter-spacing: -0.02em; color: var(--text-primary); margin-bottom: 1.5rem; }
+  .case-content h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; color: var(--text-primary); margin-top: 2rem; margin-bottom: 0.75rem; }
+  .case-content p { font-size: 1.125rem; line-height: 1.8; color: var(--text-secondary); max-width: 620px; margin-bottom: 1.25rem; }
+  .case-content ul { list-style: none; padding: 0; margin-bottom: 1.5rem; }
+  .case-content ul li { font-size: 1.05rem; line-height: 1.75; color: var(--text-secondary); max-width: 620px; padding: 0.6rem 0 0.6rem 1.5rem; border-bottom: 1px solid rgba(34, 34, 40, 0.5); position: relative; }
+  .case-content ul li::before { content: ''; position: absolute; left: 0; top: 1.05rem; width: 6px; height: 6px; border: 1px solid var(--accent); border-radius: 50%; }
+  .case-content ul li:last-child { border-bottom: none; }
+  .case-content ul li strong { color: var(--text-primary); font-weight: 600; }
+
+  .margin-note { font-family: var(--font-body); font-style: italic; font-size: 1.095rem; color: var(--italic-light); line-height: 1.55; max-width: 200px; }
+
+  /* Workflow Steps */
+  .workflow-steps { margin: 2rem 0; counter-reset: step; }
+  .workflow-step { display: grid; grid-template-columns: 48px 1fr; gap: 1.5rem; padding: 1.75rem 0; border-bottom: 1px solid var(--border); position: relative; }
+  .workflow-step:first-child { border-top: 1px solid var(--border); }
+  .workflow-step-num { font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; color: var(--accent); text-align: center; padding-top: 0.1rem; }
+  .workflow-step-title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.4rem; }
+  .workflow-step-desc { font-size: 0.98rem; line-height: 1.65; color: var(--text-secondary); }
+  .workflow-step-sources { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .source-tag { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); border: 1px solid var(--border); padding: 0.2rem 0.5rem; border-radius: 2px; }
+
+  /* Build vs Buy */
+  .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 2rem 0; }
+  .comparison-col { padding: 2rem 2rem; border: 1px solid var(--border); }
+  .comparison-col:first-child { margin-right: -1px; }
+  .comparison-header { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; margin-bottom: 1.25rem; }
+  .comparison-build { color: var(--accent); }
+  .comparison-buy { color: var(--text-primary); }
+  .comparison-item { padding: 0.5rem 0; font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); }
+  .comparison-item strong { color: var(--text-primary); }
+  .comparison-verdict { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; }
+  .verdict-recommended { color: var(--accent); }
+  .verdict-not { color: var(--text-tertiary); }
+
+  /* Adoption phases */
+  .adoption-timeline { margin: 2rem 0; }
+  .adoption-phase { display: grid; grid-template-columns: 140px 1fr; gap: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--border); }
+  .adoption-phase:first-child { border-top: 1px solid var(--border); }
+  .adoption-label { font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--accent); }
+  .adoption-time { font-size: 0.82rem; color: var(--text-tertiary); margin-top: 0.25rem; }
+  .adoption-desc { font-size: 1.05rem; line-height: 1.75; color: var(--text-secondary); }
+
+  /* Metrics */
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 2rem 0; }
+  .metric-item { padding: 1.75rem; border: 1px solid var(--border); margin-right: -1px; margin-bottom: -1px; }
+  .metric-value { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--accent); margin-bottom: 0.25rem; }
+  .metric-name { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.35rem; }
+  .metric-desc { font-size: 0.88rem; line-height: 1.55; color: var(--text-secondary); }
+
+  /* Callout */
+  .callout-block { background: var(--surface); border: 1px solid var(--border); padding: 2.5rem 2.5rem 2.5rem 3rem; margin: 2rem 0; max-width: 620px; position: relative; }
+  .callout-block::before { content: ''; position: absolute; top: -1px; left: -1px; bottom: -1px; width: 3px; background: var(--accent); }
+  .callout-block p { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; line-height: 1.5; color: var(--text-primary); }
+
+  .case-footer { padding: 5rem 3rem; border-bottom: 1px solid var(--border); }
+  .case-footer-inner { display: flex; justify-content: space-between; align-items: flex-end; max-width: 1200px; }
+  .case-footer h2 { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.15; color: var(--text-primary); max-width: 500px; }
+  .case-footer-email { display: inline-block; font-family: var(--font-body); font-size: 1.1rem; font-weight: 500; color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(200, 164, 110, 0.25); transition: border-color 0.3s ease; }
+  .case-footer-email:hover { border-color: var(--accent); }
+
+  footer { padding: 2.25rem 3rem; display: flex; justify-content: space-between; align-items: center; }
+  footer p { font-size: 0.91rem; color: var(--text-tertiary); letter-spacing: 0.05em; }
+  .footer-links { display: flex; gap: 2rem; }
+  .footer-links a { font-size: 0.91rem; color: var(--text-tertiary); text-decoration: none; letter-spacing: 0.05em; transition: color 0.3s ease; }
+  .footer-links a:hover { color: var(--text-primary); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 1100px) { .case-grid { grid-template-columns: 180px 1fr; } .case-grid .margin-note-col { display: none; } }
+  @media (max-width: 900px) { nav { padding: 1.25rem 1.5rem; } .case-hero { padding: max(4.5vh, 5rem) 1.5rem 3rem; } .case-section { padding: 3.5rem 1.5rem; } .case-grid, .case-grid-narrow { grid-template-columns: 1fr; gap: 1.5rem; } .comparison-grid, .metrics-grid { grid-template-columns: 1fr; } .adoption-phase { grid-template-columns: 1fr; gap: 0.5rem; } .workflow-step { grid-template-columns: 36px 1fr; gap: 1rem; } .case-footer { padding: 3.5rem 1.5rem; } .case-footer-inner { flex-direction: column; gap: 2rem; align-items: flex-start; } footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; } .case-hero::before, .case-hero::after { display: none; } }
+  @media (max-width: 600px) { .case-hero h1 { font-size: 1.9rem; } .case-meta { flex-wrap: wrap; gap: 1rem; } }
+</style>
+</head>
+<body>
+<div class="page-content">
+
+<nav>
+  <a href="index.html" class="nav-name">Robert G. Murray</a>
+  <a href="index.html#portfolio" class="nav-back"><span class="nav-back-arrow">&larr;</span> Back to Portfolio</a>
+</nav>
+
+<section class="case-hero">
+  <div class="case-meta">
+    <span class="case-type">AI Integration Strategy</span>
+    <span class="case-date">March 2026</span>
+  </div>
+  <h1>Intelligent Design Brief Generation for Industrial Manufacturing</h1>
+  <p class="case-hero-sub">A strategic proposal for integrating AI as a workflow agent into a mid-market industrial design services firm — replacing 40+ hours of manual brief assembly with an intelligent orchestration system.</p>
+</section>
+
+<!-- CONTEXT -->
+<section class="case-section">
+  <div class="case-grid reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 01</span>
+      <div class="case-section-label">Context</div>
+    </div>
+    <div class="case-content">
+      <h2>The Organization</h2>
+      <p>A mid-market industrial design services firm with 80–120 employees serving manufacturing clients in consumer electronics, medical devices, and automotive components. Revenue: $15M–25M annually. The firm competes on design quality and speed-to-market — their ability to translate a client's product vision into manufacturable specifications faster than competitors.</p>
+
+      <h3>The Problem</h3>
+      <p>Every new project begins with a design brief — a comprehensive document that synthesizes competitive research, material specifications, regulatory requirements, client history, manufacturing constraints, and trend analysis into a coherent starting point for the design team.</p>
+      <p>Currently, this process takes 40–60 hours per project, spread across senior designers, materials engineers, and account managers pulling information from 8–12 disconnected sources. The brief is the single largest time investment before any design work begins, and it depends heavily on institutional knowledge held by a small number of senior staff.</p>
+
+      <h3>The Strategic Risk</h3>
+      <p>Three senior designers hold 70% of the institutional knowledge required to assemble comprehensive briefs. Two are within 5 years of retirement. The firm has no scalable system for capturing, organizing, or deploying this expertise. Every brief is assembled manually, from scratch, using tribal knowledge and personal networks.</p>
+    </div>
+    <div class="margin-note-col">
+      <div class="margin-note" style="margin-top: 8rem;">The brief isn't paperwork. It's the foundation every design decision builds on. Get it wrong and you pay for it in every revision downstream.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CURRENT WORKFLOW -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 02</span>
+      <div class="case-section-label">Current State</div>
+    </div>
+    <div class="case-content">
+      <h2>The Manual Workflow</h2>
+      <p>The existing brief assembly process follows a consistent pattern across projects, but execution is entirely manual and dependent on individual expertise.</p>
+
+      <div class="workflow-steps">
+        <div class="workflow-step">
+          <div class="workflow-step-num">01</div>
+          <div>
+            <div class="workflow-step-title">Client History Review</div>
+            <div class="workflow-step-desc">Account manager pulls past project files, preference documentation, and relationship notes from CRM, shared drives, and personal email archives.</div>
+            <div class="workflow-step-sources"><span class="source-tag">CRM</span><span class="source-tag">File Server</span><span class="source-tag">Email</span></div>
+          </div>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-step-num">02</div>
+          <div>
+            <div class="workflow-step-title">Competitive Landscape</div>
+            <div class="workflow-step-desc">Senior designer manually researches competitor products, patent filings, and market positioning. Typically involves 6–8 hours of web research, database queries, and industry report review.</div>
+            <div class="workflow-step-sources"><span class="source-tag">USPTO</span><span class="source-tag">Industry DBs</span><span class="source-tag">Web Research</span></div>
+          </div>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-step-num">03</div>
+          <div>
+            <div class="workflow-step-title">Material &amp; Manufacturing Specs</div>
+            <div class="workflow-step-desc">Materials engineer identifies candidate materials, checks supplier availability, pulls spec sheets, and cross-references with client manufacturing capabilities.</div>
+            <div class="workflow-step-sources"><span class="source-tag">Supplier APIs</span><span class="source-tag">Material DBs</span><span class="source-tag">Internal Specs</span></div>
+          </div>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-step-num">04</div>
+          <div>
+            <div class="workflow-step-title">Regulatory Requirements</div>
+            <div class="workflow-step-desc">Compliance review for target markets — FDA, CE, UL, FCC depending on product category and geography. Often requires consulting external regulatory databases and prior certification records.</div>
+            <div class="workflow-step-sources"><span class="source-tag">FDA/CE/UL DBs</span><span class="source-tag">Prior Certs</span><span class="source-tag">Legal</span></div>
+          </div>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-step-num">05</div>
+          <div>
+            <div class="workflow-step-title">Trend Analysis</div>
+            <div class="workflow-step-desc">Design team reviews current aesthetic, ergonomic, and functional trends relevant to the product category. Sources include trade publications, design databases, and social listening tools.</div>
+            <div class="workflow-step-sources"><span class="source-tag">Trade Pubs</span><span class="source-tag">Trend Platforms</span><span class="source-tag">Social Data</span></div>
+          </div>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-step-num">06</div>
+          <div>
+            <div class="workflow-step-title">Brief Synthesis</div>
+            <div class="workflow-step-desc">Senior designer assembles all inputs into a cohesive document, applying judgment to prioritize constraints, identify opportunities, and frame the design challenge. This is where institutional expertise matters most.</div>
+            <div class="workflow-step-sources"><span class="source-tag">All Sources</span><span class="source-tag">Expertise</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROPOSED ARCHITECTURE -->
+<section class="case-section">
+  <div class="case-grid reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 03</span>
+      <div class="case-section-label">Proposed System</div>
+    </div>
+    <div class="case-content">
+      <h2>AI Agent Architecture</h2>
+      <p>The proposed system is not a single tool — it's an orchestration layer that automates steps 1–5 of the current workflow and augments step 6 (synthesis). The AI agent coordinates across data sources, applies domain-specific reasoning, and produces a structured draft brief that senior designers review, refine, and approve rather than build from scratch.</p>
+
+      <h3>Data Connector Layer</h3>
+      <p>Standardized API integrations with the firm's existing systems — CRM for client history, file servers for project archives, material databases for specifications, regulatory databases for compliance requirements, and web APIs for competitive and trend research. Each connector normalizes data into a consistent schema the agent can reason over.</p>
+
+      <h3>Intelligence Layer</h3>
+      <p>LLM-powered reasoning engine (Claude API via Sonnet for data synthesis, Opus for complex judgment calls) with domain-specific prompting frameworks calibrated to industrial design brief standards. The intelligence layer doesn't just retrieve information — it prioritizes, cross-references, and identifies conflicts between sources.</p>
+
+      <h3>Synthesis Engine</h3>
+      <p>The core differentiator: a structured brief generation system that transforms raw research into a coherent design brief following the firm's established template. The engine applies institutional knowledge rules (captured from senior designers through a structured knowledge transfer process) to make prioritization decisions that previously required expert judgment.</p>
+
+      <h3>Review Interface</h3>
+      <p>A purpose-built review environment where senior designers interact with the generated brief — accepting, modifying, or rejecting each section with inline annotations. Every edit trains the system's prioritization model, capturing institutional knowledge incrementally rather than through a single documentation effort.</p>
+    </div>
+    <div class="margin-note-col">
+      <div class="margin-note" style="margin-top: 2rem;">The AI doesn't replace the senior designer. It does the first 35 hours so the designer can spend 5 hours on judgment instead of assembly.</div>
+    </div>
+  </div>
+</section>
+
+<!-- BUILD VS BUY -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 04</span>
+      <div class="case-section-label">Build vs. Buy</div>
+    </div>
+    <div class="case-content">
+      <h2>Build vs. Buy Analysis</h2>
+      <p>The question isn't whether to use AI — it's whether to build a custom orchestration system or adopt existing tools. The analysis evaluates both approaches against the firm's specific requirements.</p>
+
+      <div class="comparison-grid">
+        <div class="comparison-col">
+          <div class="comparison-header comparison-build">Build Custom</div>
+          <div class="comparison-item"><strong>Fit:</strong> Exact match to workflow, template standards, and knowledge capture requirements.</div>
+          <div class="comparison-item"><strong>Data control:</strong> All client data stays on-premise or in controlled cloud environments. No third-party training risk.</div>
+          <div class="comparison-item"><strong>Integration depth:</strong> Custom connectors to legacy systems (CAD libraries, material databases) that commercial tools don't support.</div>
+          <div class="comparison-item"><strong>Cost:</strong> Higher upfront ($80K–120K development), lower marginal cost per brief at scale.</div>
+          <div class="comparison-item"><strong>Risk:</strong> Maintenance burden, dependency on development resources, longer time-to-value (4–6 months).</div>
+          <div class="comparison-verdict verdict-recommended">→ Recommended for synthesis engine and knowledge capture</div>
+        </div>
+        <div class="comparison-col">
+          <div class="comparison-header comparison-buy">Buy / Adapt</div>
+          <div class="comparison-item"><strong>Fit:</strong> Generic research and retrieval tools cover 60–70% of data gathering needs without customization.</div>
+          <div class="comparison-item"><strong>Data control:</strong> Varies by vendor. Enterprise tiers offer data isolation but not all support on-premise deployment.</div>
+          <div class="comparison-item"><strong>Integration depth:</strong> Standard APIs for common tools. Legacy system support is limited or requires custom middleware.</div>
+          <div class="comparison-item"><strong>Cost:</strong> Lower upfront ($2K–5K/month SaaS), higher marginal cost per brief due to per-seat or per-query pricing.</div>
+          <div class="comparison-item"><strong>Risk:</strong> Vendor dependency, feature roadmap misalignment, data privacy concerns with client information.</div>
+          <div class="comparison-verdict verdict-recommended">→ Recommended for competitive research and trend analysis</div>
+        </div>
+      </div>
+
+      <h3>Recommendation: Hybrid Approach</h3>
+      <p>Build the orchestration layer, synthesis engine, and review interface in-house — these are the components where domain specificity and knowledge capture create lasting competitive advantage. Use commercial AI research tools (Perplexity Pro, industry-specific databases with API access) for the data gathering steps where generic capability is sufficient.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ADOPTION STRATEGY -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 05</span>
+      <div class="case-section-label">Adoption</div>
+    </div>
+    <div class="case-content">
+      <h2>Adoption Strategy</h2>
+      <p>AI adoption in a design-driven firm requires managing both technical integration and cultural resistance. Designers need to trust that the system augments their expertise rather than commoditizing it.</p>
+
+      <div class="adoption-timeline">
+        <div class="adoption-phase">
+          <div>
+            <div class="adoption-label">Shadow Mode</div>
+            <div class="adoption-time">Months 1–3</div>
+          </div>
+          <div class="adoption-desc">Run the AI agent in parallel with the manual process on 3–5 active projects. Senior designers assemble briefs as usual; the AI generates its version independently. Compare outputs to calibrate quality and identify gaps. No workflow change, no disruption — just measurement.</div>
+        </div>
+        <div class="adoption-phase">
+          <div>
+            <div class="adoption-label">Assisted Mode</div>
+            <div class="adoption-time">Months 3–6</div>
+          </div>
+          <div class="adoption-desc">AI generates the first draft; senior designers review, edit, and approve using the review interface. Every edit refines the model. Track time savings, quality scores, and designer satisfaction. The designer remains the author — the AI becomes the research assistant.</div>
+        </div>
+        <div class="adoption-phase">
+          <div>
+            <div class="adoption-label">Standard Mode</div>
+            <div class="adoption-time">Months 6–12</div>
+          </div>
+          <div class="adoption-desc">AI-generated briefs become the default starting point for all new projects. Senior designers shift from assembly to quality assurance and strategic input. Mid-level designers gain access to institutional knowledge previously locked in senior staff's heads. Knowledge transfer accelerates as the system captures expertise through every review cycle.</div>
+        </div>
+        <div class="adoption-phase">
+          <div>
+            <div class="adoption-label">Autonomous Mode</div>
+            <div class="adoption-time">Month 12+</div>
+          </div>
+          <div class="adoption-desc">For standard project types with established patterns, the AI generates briefs that require minimal review. Senior designers focus on novel challenges, strategic direction, and client relationship development. The firm's institutional knowledge is preserved in a system rather than dependent on individuals.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUCCESS METRICS -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 06</span>
+      <div class="case-section-label">Metrics</div>
+    </div>
+    <div class="case-content">
+      <h2>Success Metrics</h2>
+
+      <div class="metrics-grid">
+        <div class="metric-item">
+          <div class="metric-value">40 → 8 hrs</div>
+          <div class="metric-name">Brief Assembly Time</div>
+          <div class="metric-desc">80% reduction in time from project kickoff to completed design brief.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-value">70%</div>
+          <div class="metric-name">Knowledge Capture</div>
+          <div class="metric-desc">Percentage of senior designer institutional knowledge encoded in the system within 12 months.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-value">≥ 90%</div>
+          <div class="metric-name">Brief Quality Score</div>
+          <div class="metric-desc">AI-generated briefs rated equal or better to manual briefs by design team leads.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-value">2.4x</div>
+          <div class="metric-name">Project Throughput</div>
+          <div class="metric-desc">Additional projects the firm can take on per quarter with the same senior staff.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-value">&lt; 12 mo</div>
+          <div class="metric-name">ROI Payback</div>
+          <div class="metric-desc">Time to recoup development investment through reduced labor cost and increased capacity.</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-value">0 → 100%</div>
+          <div class="metric-name">Succession Readiness</div>
+          <div class="metric-desc">Ability to maintain brief quality if senior designers depart. From critical risk to managed transition.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RISK -->
+<section class="case-section">
+  <div class="case-grid-narrow reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 07</span>
+      <div class="case-section-label">Risks</div>
+    </div>
+    <div class="case-content">
+      <h2>Risks &amp; Mitigations</h2>
+      <ul>
+        <li><strong>Designer resistance.</strong> Senior staff may view AI as a threat to their role. Mitigation: position the system as a tool that eliminates the tedious assembly work and frees them for the judgment-intensive work they actually value. Involve them as system architects, not passive recipients.</li>
+        <li><strong>Quality drift.</strong> AI-generated briefs may introduce subtle errors that propagate through the design process. Mitigation: mandatory senior review for all briefs during the first 12 months. Quality scoring on every output with automated flagging of low-confidence sections.</li>
+        <li><strong>Client data sensitivity.</strong> Design briefs contain proprietary client information. Mitigation: on-premise deployment option for the synthesis engine. API calls to cloud LLMs use anonymized data with client identifiers stripped. Contractual data handling agreements with all API providers.</li>
+        <li><strong>Over-reliance.</strong> Mid-level designers may accept AI outputs without developing their own judgment. Mitigation: the review interface requires substantive engagement, not just approval clicks. Training program ensures designers understand why the AI made each recommendation, not just what it recommended.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CONCLUSION -->
+<section class="case-section">
+  <div class="case-grid reveal">
+    <div class="case-sidebar">
+      <span class="case-section-number">§ 08</span>
+      <div class="case-section-label">Conclusion</div>
+    </div>
+    <div class="case-content">
+      <h2>AI as Workflow Agent, Not Magic Wand</h2>
+      <p>The value of AI integration isn't in replacing human expertise — it's in making that expertise scalable, transferable, and resilient. A design firm's institutional knowledge is its most valuable and most fragile asset. When it exists only in the heads of senior staff, every retirement is a strategic loss.</p>
+      <p>This proposal treats AI integration as a design problem, not a technology problem. The architecture, adoption strategy, and success metrics are all structured around how people actually work — not how a system architect imagines they should work. That's the same discipline that separates good industrial design from engineering exercises.</p>
+
+      <div class="callout-block">
+        <p>The best AI integration is the one users forget is AI. It just feels like the system finally works the way it should have all along.</p>
+      </div>
+    </div>
+    <div class="margin-note-col">
+      <div class="margin-note" style="margin-top: 2rem;">Loewy's MAYA principle applies to internal tools too. Most advanced yet acceptable — for the people who have to use it every day.</div>
+    </div>
+  </div>
+</section>
+
+<section class="case-footer">
+  <div class="case-footer-inner reveal">
+    <h2>Interested in discussing AI integration strategy?</h2>
+    <div><a href="mailto:rgmurray@designsell.org" class="case-footer-email">rgmurray@designsell.org</a></div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Robert G. Murray</p>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="https://www.linkedin.com/in/robert-murray-b7a8515/" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+</footer>
+
+</div>
+<script>
+  const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
