@@ -22,8 +22,32 @@
     --accent: #c8a46e;
     --accent-dim: rgba(200, 164, 110, 0.1);
     --accent-ghost: rgba(200, 164, 110, 0.04);
+    --italic-light: #c8c7c0;
+    --nav-bg: rgba(10, 10, 12, 0.85);
+    --accent-border: rgba(200, 164, 110, 0.25);
+    --error: #c06a5e;
     --font-display: 'Syne', sans-serif;
     --font-body: 'Familjen Grotesk', sans-serif;
+  }
+
+  [data-theme="light"] {
+    --black: #f3f2ee;
+    --surface: #eae9e4;
+    --surface-raised: #e0dfda;
+    --border: #d0cfc8;
+    --grid-line: rgba(160, 125, 66, 0.08);
+    --construction: rgba(160, 125, 66, 0.1);
+    --text-primary: #1a1a1e;
+    --text-secondary: #4a4950;
+    --text-tertiary: #7a7980;
+    --text-annotation: #6a6970;
+    --accent: #a07d42;
+    --accent-dim: rgba(160, 125, 66, 0.12);
+    --accent-ghost: rgba(160, 125, 66, 0.05);
+    --italic-light: #5a5860;
+    --nav-bg: rgba(243, 242, 238, 0.9);
+    --accent-border: rgba(160, 125, 66, 0.3);
+    --error: #b5453a;
   }
 
   *, *::before, *::after {
@@ -88,6 +112,42 @@
     z-index: 1;
   }
 
+  /* ── THEME TOGGLE ── */
+  .theme-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-tertiary);
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+    transition: color 0.3s ease, border-color 0.3s ease;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+  }
+
+  .theme-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .theme-toggle-icon {
+    font-size: 0.8rem;
+    line-height: 1;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
   /* ── NAV ── */
   nav {
     position: fixed;
@@ -101,7 +161,7 @@
     align-items: center;
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    background: rgba(10, 10, 12, 0.85);
+    background: var(--nav-bg);
     border-bottom: 1px solid var(--border);
   }
 
@@ -152,7 +212,7 @@
     font-style: italic;
     font-size: 1.125rem;
     font-weight: 400;
-    color: #c8c7c0;
+    color: var(--italic-light);
     letter-spacing: 0.01em;
     line-height: 1.5;
     position: relative;
@@ -175,7 +235,7 @@
     font-family: var(--font-body);
     font-style: italic;
     font-size: 1.095rem;
-    color: #c8c7c0;
+    color: var(--italic-light);
     line-height: 1.55;
     max-width: 200px;
   }
@@ -529,7 +589,7 @@
     font-family: var(--font-body);
     font-style: italic;
     font-size: 0.93rem;
-    color: #c8c7c0;
+    color: var(--italic-light);
     white-space: nowrap;
     pointer-events: none;
   }
@@ -587,7 +647,7 @@
   .lineage-role {
     font-size: 1.095rem;
     font-style: italic;
-    color: #c8c7c0;
+    color: var(--italic-light);
     line-height: 1.5;
   }
 
@@ -663,7 +723,7 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--accent);
-    border: 1px solid rgba(200, 164, 110, 0.25);
+    border: 1px solid var(--accent-border);
     padding: 0.2rem 0.55rem;
     border-radius: 2px;
     white-space: nowrap;
@@ -779,7 +839,7 @@
   .gate-error {
     margin-top: 0.75rem;
     font-size: 0.925rem;
-    color: #c06a5e;
+    color: var(--error);
     min-height: 1.2em;
   }
 
@@ -957,7 +1017,7 @@
     text-decoration: none;
     letter-spacing: 0.02em;
     padding-bottom: 2px;
-    border-bottom: 1px solid rgba(200, 164, 110, 0.25);
+    border-bottom: 1px solid var(--accent-border);
     transition: border-color 0.3s ease;
   }
 
@@ -1084,15 +1144,21 @@
 <!-- NAV -->
 <nav>
   <div class="nav-name">Robert G. Murray</div>
-  <ul class="nav-links">
-    <li><a href="#approach">Approach</a></li>
-    <li><a href="#domains">Domains</a></li>
-    <li><a href="#lineage">Lineage</a></li>
-    <li><a href="perspectives.html">Perspectives</a></li>
-    <li><a href="#engagement">Engagement</a></li>
-    <li><a href="#portfolio">Portfolio</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#approach">Approach</a></li>
+      <li><a href="#domains">Domains</a></li>
+      <li><a href="#lineage">Lineage</a></li>
+      <li><a href="perspectives.html">Perspectives</a></li>
+      <li><a href="#engagement">Engagement</a></li>
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+      <span class="theme-toggle-icon" id="themeIcon">☀</span>
+      <span id="themeLabel">Light</span>
+    </button>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -1431,6 +1497,38 @@
 </div>
 
 <script>
+  // ── Theme Toggle ──
+  function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    const newTheme = current === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateToggleUI(newTheme);
+  }
+
+  function updateToggleUI(theme) {
+    const icon = document.getElementById('themeIcon');
+    const label = document.getElementById('themeLabel');
+    if (theme === 'light') {
+      icon.textContent = '☾';
+      label.textContent = 'Dark';
+    } else {
+      icon.textContent = '☀';
+      label.textContent = 'Light';
+    }
+  }
+
+  // Restore saved theme
+  (function() {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      updateToggleUI('light');
+    }
+  })();
+
+  // ── Reveal Observer ──
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
